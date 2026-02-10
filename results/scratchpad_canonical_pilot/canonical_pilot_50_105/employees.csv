@@ -1,0 +1,13 @@
+employee_id,persona_name,workload_tier,target_active_threads,monthly_message_volume_proxy,seniority_proxy
+emp-001,Casey Clark,low_volume,39.91,180,1
+emp-002,Jordan Chen,low_volume,30.39,511,2
+emp-003,Riley Khan,low_volume,34.33,349,5
+emp-004,Avery Brown,low_volume,32.7,504,3
+emp-005,Taylor Chen,mid_volume,28.2,786,3
+emp-006,Morgan Miller,mid_volume,37.71,830,2
+emp-007,Casey Brown,mid_volume,49.2,1250,1
+emp-008,Taylor Brown,mid_volume,62.19,923,4
+emp-009,Casey Patel,mid_volume,48.74,678,5
+emp-010,Cameron Kim,high_volume,49.54,1807,2
+emp-011,Sam Kim,high_volume,87.11,1551,4
+emp-012,Morgan Clark,high_volume,64.28,2123,3

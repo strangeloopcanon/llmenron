@@ -1,0 +1,10 @@
+duckdb>=1.0.0
+matplotlib>=3.8
+numpy>=1.26
+pandas>=2.2
+requests>=2.31
+scipy>=1.12
+statsmodels>=0.14
+
+# Optional: needed if you want to read/write parquet outputs.
+# pyarrow>=16

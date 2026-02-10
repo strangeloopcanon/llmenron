@@ -1,0 +1,44 @@
+# Secrets / credentials
+.env
+.env.*
+!.env.example
+
+# Local tooling
+.beads/
+.codex/
+
+# Virtualenvs
+.venv/
+venv/
+ENV/
+
+# Python build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+
+# Data (not committed)
+data/
+raw/
+
+# Results: keep only public-safe artifacts needed for the README
+results/*
+!results/figures/
+!results/figures/**
+!results/key_results.csv
+!results/human_analysis_summary.md
+!results/scratchpad_canonical_pilot/
+!results/scratchpad_canonical_pilot/canonical_pilot_50_105/
+!results/scratchpad_canonical_pilot/canonical_pilot_50_105/**
+
+# Older pilot artifact (rubric-compliance scoring) kept locally but not committed.
+results/scratchpad_canonical_pilot/canonical_pilot_50_105/runs/openai_gpt-5.2_20260210T015553Z/

@@ -1,0 +1,15 @@
+{
+  "scenario_tag": "canonical_pilot_50_105",
+  "seed": 20260210,
+  "n_values": [
+    50,
+    105
+  ],
+  "episodes_per_n": 1,
+  "messages_per_episode": 180,
+  "employees": 12,
+  "context_memory_rate": 0.307,
+  "median_active_threads": 49.970099667774086,
+  "median_p90_active_threads": 104.5,
+  "filler_source": "template"
+}
