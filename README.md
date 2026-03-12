@@ -4,6 +4,8 @@ This repo asks a simple question: what actually breaks first when an AI agent ha
 
 We start by estimating how many threads people juggle in real organizations using Enron email metadata. Then we run a series of synthetic inbox and org-simulation experiments at those load levels. The headline result so far is not that "LLMs are bad at email." It is that they get much better when we stop making them recover task identity, coordination state, and role identity from one giant conversational memory.
 
+![Enron communication complexity header](results/figures/blog_header_enron_complexity.png)
+
 ## Repo Thesis
 
 The first big unlock for agent systems looks more like **better state** than **bigger prompts**.
@@ -76,6 +78,7 @@ If you wanted the shortest possible version of the repo, it would be this:
 
 ## Curated Outputs
 
+- Repo/blog header image: [results/figures/blog_header_enron_complexity.png](results/figures/blog_header_enron_complexity.png)
 - Human baseline summary: [results/summaries/human_analysis_summary.md](results/summaries/human_analysis_summary.md)
 - Human baseline metrics: [results/summaries/key_results.csv](results/summaries/key_results.csv)
 - Canonical scratchpad pilot summary: [experiments/scratchpad_frontier/scratchpad_canonical_pilot/summary.md](experiments/scratchpad_frontier/scratchpad_canonical_pilot/summary.md)
@@ -104,6 +107,24 @@ Outputs:
 - `results/figures/experiment2_structure_vs_scale.png`
 - `results/figures/experiment3_shared_board.png`
 - `results/figures/experiment4_actor_identity.png`
+</details>
+
+<details>
+<summary>Generate The Blog / Repo Header Image</summary>
+
+```bash
+python scripts/generate_blog_header_image.py \
+  --variant labeled \
+  --output-path results/figures/blog_header_enron_complexity.png
+```
+
+Optional clean variant:
+
+```bash
+python scripts/generate_blog_header_image.py \
+  --variant clean \
+  --output-path results/figures/blog_header_enron_complexity_clean.png
+```
 </details>
 
 <details>
