@@ -70,7 +70,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("results/rosetta"),
+        default=Path("experiments/org_simulator/rosetta"),
         help="Output directory for Rosetta artifacts.",
     )
     parser.add_argument("--start-year", type=int, default=1997)

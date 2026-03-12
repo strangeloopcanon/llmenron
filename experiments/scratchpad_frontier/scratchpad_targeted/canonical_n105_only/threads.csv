@@ -1,0 +1,106 @@
+episode_id,thread_id,project_code,owner,due_date,thread_archetype,task_title
+ep-00001,ep-00001-th-001,R759,Cameron Garcia,2001-04-25,informational_update,FYI update
+ep-00001,ep-00001-th-002,Q608,Morgan Kim,2001-02-22,deadline_request,Contract signature
+ep-00001,ep-00001-th-003,I505,Alex Clark,2001-04-24,informational_update,Schedule change
+ep-00001,ep-00001-th-004,X270,Cameron Chen,2001-12-28,deadline_request,Approval needed
+ep-00001,ep-00001-th-005,K735,Taylor Shah,2001-06-26,request_with_question,Risk assessment
+ep-00001,ep-00001-th-006,A858,Morgan Kim,2001-03-02,request_with_question,Decision recommendation
+ep-00001,ep-00001-th-007,X298,Sam Chen,2001-02-06,informational_update,FYI update
+ep-00001,ep-00001-th-008,C174,Avery Patel,2001-08-26,informational_update,FYI update
+ep-00001,ep-00001-th-009,W319,Casey Chen,2001-05-04,informational_update,Schedule change
+ep-00001,ep-00001-th-010,B282,Jordan Chen,2001-10-09,direct_request,Send requested data
+ep-00001,ep-00001-th-011,W594,Avery Khan,2001-05-04,request_with_question,Decision recommendation
+ep-00001,ep-00001-th-012,J336,Cameron Miller,2001-10-05,informational_update,Heads up
+ep-00001,ep-00001-th-013,G701,Morgan Khan,2001-02-22,direct_request,Quick action needed
+ep-00001,ep-00001-th-014,L752,Jamie Brown,2001-06-03,informational_update,Heads up
+ep-00001,ep-00001-th-015,M559,Casey Chen,2001-10-13,direct_request,Review and respond
+ep-00001,ep-00001-th-016,E197,Taylor Patel,2001-09-08,direct_request,Quick action needed
+ep-00001,ep-00001-th-017,M658,Sam Brown,2001-02-17,direct_request,Send requested data
+ep-00001,ep-00001-th-018,O948,Morgan Patel,2001-08-03,deadline_request,Approval needed
+ep-00001,ep-00001-th-019,I926,Casey Patel,2001-01-03,document_delivery,Notes for reference
+ep-00001,ep-00001-th-020,M864,Sam Khan,2001-04-28,request_with_question,Scope tradeoff
+ep-00001,ep-00001-th-021,S897,Sam Miller,2001-03-15,request_with_question,Decision recommendation
+ep-00001,ep-00001-th-022,C360,Avery Lee,2001-12-09,direct_request,Send requested data
+ep-00001,ep-00001-th-023,P719,Casey Clark,2001-09-19,information_request,Blocking details
+ep-00001,ep-00001-th-024,M716,Sam Patel,2001-08-17,informational_update,Heads up
+ep-00001,ep-00001-th-025,T957,Avery Brown,2001-12-20,information_request,Owner clarification
+ep-00001,ep-00001-th-026,Q183,Jamie Kim,2001-11-23,direct_request,Review and respond
+ep-00001,ep-00001-th-027,R449,Taylor Kim,2001-01-04,informational_update,Heads up
+ep-00001,ep-00001-th-028,S980,Casey Khan,2001-11-01,deadline_request,Board deck numbers
+ep-00001,ep-00001-th-029,L545,Casey Garcia,2001-02-05,information_request,Blocking details
+ep-00001,ep-00001-th-030,Q790,Taylor Kim,2001-09-22,direct_request,Send requested data
+ep-00001,ep-00001-th-031,K784,Sam Kim,2001-01-16,informational_update,Schedule change
+ep-00001,ep-00001-th-032,A529,Riley Lee,2001-01-09,direct_request,Quick action needed
+ep-00001,ep-00001-th-033,C626,Cameron Patel,2001-11-20,informational_update,Heads up
+ep-00001,ep-00001-th-034,Y973,Jamie Kim,2001-01-05,direct_request,Send requested data
+ep-00001,ep-00001-th-035,Z335,Sam Patel,2001-05-02,deadline_request,Blocking incident
+ep-00001,ep-00001-th-036,D514,Morgan Shah,2001-03-19,deadline_request,Blocking incident
+ep-00001,ep-00001-th-037,V989,Riley Lee,2001-10-07,deadline_request,Blocking incident
+ep-00001,ep-00001-th-038,R860,Sam Lee,2001-08-05,deadline_request,Board deck numbers
+ep-00001,ep-00001-th-039,G667,Taylor Shah,2001-09-19,deadline_request,Contract signature
+ep-00001,ep-00001-th-040,L894,Riley Chen,2001-11-27,request_with_question,Decision recommendation
+ep-00001,ep-00001-th-041,F177,Avery Patel,2001-03-13,direct_request,Send requested data
+ep-00001,ep-00001-th-042,F244,Sam Garcia,2001-04-07,information_request,Status check
+ep-00001,ep-00001-th-043,N939,Riley Kim,2001-03-07,deadline_request,Board deck numbers
+ep-00001,ep-00001-th-044,J599,Cameron Garcia,2001-08-27,deadline_request,Contract signature
+ep-00001,ep-00001-th-045,Q789,Alex Lee,2001-07-02,informational_update,Heads up
+ep-00001,ep-00001-th-046,X308,Alex Patel,2001-08-25,informational_update,Schedule change
+ep-00001,ep-00001-th-047,E630,Taylor Shah,2001-01-14,request_with_question,Risk assessment
+ep-00001,ep-00001-th-048,Q283,Sam Miller,2001-03-18,informational_update,FYI update
+ep-00001,ep-00001-th-049,Y840,Jamie Miller,2001-05-09,informational_update,Schedule change
+ep-00001,ep-00001-th-050,A258,Taylor Khan,2001-03-18,informational_update,Heads up
+ep-00001,ep-00001-th-051,W169,Riley Kim,2001-09-24,informational_update,FYI update
+ep-00001,ep-00001-th-052,K327,Riley Brown,2001-12-05,deadline_request,Approval needed
+ep-00001,ep-00001-th-053,A227,Riley Miller,2001-12-23,request_with_question,Risk assessment
+ep-00001,ep-00001-th-054,G138,Alex Brown,2001-04-18,document_delivery,Draft attached
+ep-00001,ep-00001-th-055,F388,Morgan Lee,2001-11-10,information_request,Status check
+ep-00001,ep-00001-th-056,B332,Casey Chen,2001-10-11,informational_update,FYI update
+ep-00001,ep-00001-th-057,E109,Cameron Brown,2001-04-27,information_request,Blocking details
+ep-00001,ep-00001-th-058,V639,Riley Garcia,2001-09-18,information_request,Status check
+ep-00001,ep-00001-th-059,S859,Jordan Brown,2001-03-11,informational_update,FYI update
+ep-00001,ep-00001-th-060,B124,Jamie Patel,2001-11-27,deadline_request,Contract signature
+ep-00001,ep-00001-th-061,T485,Cameron Patel,2001-10-25,deadline_request,Approval needed
+ep-00001,ep-00001-th-062,A870,Jordan Brown,2001-11-21,direct_request,Send requested data
+ep-00001,ep-00001-th-063,K446,Alex Garcia,2001-02-19,deadline_request,Contract signature
+ep-00001,ep-00001-th-064,T232,Casey Miller,2001-11-08,informational_update,FYI update
+ep-00001,ep-00001-th-065,X474,Riley Miller,2001-02-13,informational_update,FYI update
+ep-00001,ep-00001-th-066,O484,Morgan Chen,2001-01-09,direct_request,Quick action needed
+ep-00001,ep-00001-th-067,H288,Alex Brown,2001-10-05,direct_request,Quick action needed
+ep-00001,ep-00001-th-068,B337,Sam Patel,2001-03-09,document_delivery,Draft attached
+ep-00001,ep-00001-th-069,R485,Morgan Khan,2001-08-20,deadline_request,Approval needed
+ep-00001,ep-00001-th-070,W736,Sam Clark,2001-01-10,deadline_request,Contract signature
+ep-00001,ep-00001-th-071,R930,Casey Garcia,2001-05-06,request_with_question,Scope tradeoff
+ep-00001,ep-00001-th-072,W996,Casey Shah,2001-11-28,informational_update,FYI update
+ep-00001,ep-00001-th-073,V533,Sam Khan,2001-04-23,information_request,Status check
+ep-00001,ep-00001-th-074,E885,Jamie Clark,2001-10-06,deadline_request,Approval needed
+ep-00001,ep-00001-th-075,O810,Alex Kim,2001-09-16,request_with_question,Scope tradeoff
+ep-00001,ep-00001-th-076,V811,Cameron Garcia,2001-01-25,informational_update,Heads up
+ep-00001,ep-00001-th-077,W929,Jordan Patel,2001-02-01,deadline_request,Board deck numbers
+ep-00001,ep-00001-th-078,R696,Riley Kim,2001-11-09,informational_update,Schedule change
+ep-00001,ep-00001-th-079,A634,Jamie Garcia,2001-12-02,deadline_request,Contract signature
+ep-00001,ep-00001-th-080,Y441,Jordan Lee,2001-09-08,deadline_request,Approval needed
+ep-00001,ep-00001-th-081,K493,Avery Clark,2001-08-05,informational_update,FYI update
+ep-00001,ep-00001-th-082,P610,Jordan Brown,2001-02-05,request_with_question,Risk assessment
+ep-00001,ep-00001-th-083,Y981,Casey Clark,2001-05-12,information_request,Blocking details
+ep-00001,ep-00001-th-084,E148,Sam Khan,2001-11-01,request_with_question,Decision recommendation
+ep-00001,ep-00001-th-085,F269,Alex Garcia,2001-04-28,deadline_request,Board deck numbers
+ep-00001,ep-00001-th-086,Y970,Taylor Khan,2001-09-16,direct_request,Quick action needed
+ep-00001,ep-00001-th-087,G222,Sam Clark,2001-10-02,information_request,Owner clarification
+ep-00001,ep-00001-th-088,B658,Avery Chen,2001-04-16,document_delivery,Draft attached
+ep-00001,ep-00001-th-089,Y205,Sam Brown,2001-02-01,informational_update,Heads up
+ep-00001,ep-00001-th-090,H978,Morgan Shah,2001-02-18,direct_request,Send requested data
+ep-00001,ep-00001-th-091,Q262,Avery Kim,2001-07-18,deadline_request,Board deck numbers
+ep-00001,ep-00001-th-092,C722,Casey Kim,2001-02-01,direct_request,Quick action needed
+ep-00001,ep-00001-th-093,I449,Taylor Shah,2001-08-20,informational_update,Schedule change
+ep-00001,ep-00001-th-094,L436,Casey Khan,2001-03-19,informational_update,FYI update
+ep-00001,ep-00001-th-095,E783,Morgan Shah,2001-05-04,direct_request,Quick action needed
+ep-00001,ep-00001-th-096,K187,Casey Patel,2001-09-27,informational_update,FYI update
+ep-00001,ep-00001-th-097,J508,Casey Khan,2001-07-26,information_request,Owner clarification
+ep-00001,ep-00001-th-098,X996,Sam Khan,2001-06-16,informational_update,Heads up
+ep-00001,ep-00001-th-099,N477,Riley Khan,2001-12-12,direct_request,Quick action needed
+ep-00001,ep-00001-th-100,G276,Alex Shah,2001-05-19,informational_update,Schedule change
+ep-00001,ep-00001-th-101,S770,Jamie Kim,2001-09-05,direct_request,Quick action needed
+ep-00001,ep-00001-th-102,E332,Sam Brown,2001-01-24,information_request,Owner clarification
+ep-00001,ep-00001-th-103,Y685,Morgan Chen,2001-01-17,direct_request,Send requested data
+ep-00001,ep-00001-th-104,V383,Alex Lee,2001-11-22,request_with_question,Scope tradeoff
+ep-00001,ep-00001-th-105,Z680,Jamie Clark,2001-09-19,request_with_question,Decision recommendation

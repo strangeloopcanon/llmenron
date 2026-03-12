@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -21,6 +22,11 @@ import pandas as pd
 import requests
 
 PRIORITY_SLA_MIN = {"P0": 5.0, "P1": 20.0, "P2": 120.0}
+RE_PROJECT_CODE = re.compile(r"\b([A-Z][0-9]{3})\b")
+RE_CLARIFY_HINT = re.compile(
+    r"(project code|thread reference|thread id|which project|what project|which thread|before i can safely act|before i can act)",
+    re.IGNORECASE,
+)
 
 RUBRIC_MEANING = (
     "Priority meanings: "
@@ -360,9 +366,116 @@ def compute_fact_recall(row: pd.Series) -> float:
             str(row.get("pred_action_summary", "")),
             str(row.get("pred_draft_reply", "")),
             str(row.get("pred_facts_used", "")),
+            str(row.get("pred_target_project_code", "")),
         ]
     ).lower()
     return float(required != "" and required in blob)
+
+
+def extract_project_code(*values: Any) -> str:
+    for value in values:
+        text = str(value or "").strip()
+        if not text:
+            continue
+        match = RE_PROJECT_CODE.search(text)
+        if match:
+            return match.group(1)
+    return ""
+
+
+def infer_binding_decision(row: pd.Series) -> str:
+    pred_target = extract_project_code(row.get("pred_target_project_code", ""))
+    if pred_target:
+        return "bound"
+    text = " ".join(
+        [
+            str(row.get("pred_action_summary", "")),
+            str(row.get("pred_draft_reply", "")),
+        ]
+    )
+    if RE_CLARIFY_HINT.search(text):
+        return "clarify"
+    return ""
+
+
+def ensure_binding_columns(df: pd.DataFrame) -> pd.DataFrame:
+    out = df.copy()
+
+    if "pred_target_project_code" not in out.columns:
+        out["pred_target_project_code"] = out.apply(
+            lambda row: extract_project_code(
+                row.get("pred_facts_used", ""),
+                row.get("pred_action_summary", ""),
+                row.get("pred_draft_reply", ""),
+            ),
+            axis=1,
+        )
+    out["pred_target_project_code"] = out["pred_target_project_code"].fillna("").astype(str).str.strip()
+
+    if "pred_binding_decision" not in out.columns:
+        out["pred_binding_decision"] = out.apply(infer_binding_decision, axis=1)
+    out["pred_binding_decision"] = out["pred_binding_decision"].fillna("").astype(str).str.strip().str.lower()
+    missing_binding = out["pred_binding_decision"] == ""
+    if missing_binding.any():
+        out.loc[missing_binding, "pred_binding_decision"] = out.loc[missing_binding].apply(infer_binding_decision, axis=1)
+
+    if "pred_binding_source" not in out.columns:
+        out["pred_binding_source"] = ""
+    out["pred_binding_source"] = out["pred_binding_source"].fillna("").astype(str).str.strip().str.lower()
+
+    if "gold_project_code" not in out.columns:
+        gold_from_probe = np.where(
+            out.get("gold_required_key", pd.Series(index=out.index, dtype=object)).fillna("").astype(str) == "project_code",
+            out.get("gold_required_value", pd.Series(index=out.index, dtype=object)).fillna("").astype(str),
+            "",
+        )
+        out["gold_project_code"] = gold_from_probe
+    out["gold_project_code"] = out["gold_project_code"].fillna("").astype(str).str.strip()
+    missing_gold = out["gold_project_code"] == ""
+    if missing_gold.any():
+        out.loc[missing_gold, "gold_project_code"] = out.loc[missing_gold].apply(
+            lambda row: extract_project_code(row.get("subject", ""), row.get("body", "")),
+            axis=1,
+        )
+
+    email_project_code = out.apply(lambda row: extract_project_code(row.get("subject", ""), row.get("body", "")), axis=1)
+    pred_nonempty = out["pred_target_project_code"] != ""
+    gold_nonempty = out["gold_project_code"] != ""
+
+    if "binding_attempt" not in out.columns:
+        out["binding_attempt"] = pred_nonempty.astype(float)
+    else:
+        out["binding_attempt"] = out["binding_attempt"].fillna(0).astype(float)
+
+    if "target_match" not in out.columns:
+        out["target_match"] = (pred_nonempty & gold_nonempty & (out["pred_target_project_code"] == out["gold_project_code"])).astype(float)
+    else:
+        out["target_match"] = out["target_match"].fillna(0).astype(float)
+
+    if "safe_clarification" not in out.columns:
+        out["safe_clarification"] = (
+            (out["pred_binding_decision"] == "clarify")
+            & (~pred_nonempty)
+            & (email_project_code == "")
+        ).astype(float)
+    else:
+        out["safe_clarification"] = out["safe_clarification"].fillna(0).astype(float)
+
+    if "unsafe_wrong_target" not in out.columns:
+        out["unsafe_wrong_target"] = (pred_nonempty & gold_nonempty & (out["pred_target_project_code"] != out["gold_project_code"])).astype(float)
+    else:
+        out["unsafe_wrong_target"] = out["unsafe_wrong_target"].fillna(0).astype(float)
+
+    needs_memory = out.get("needs_memory", pd.Series(0, index=out.index)).fillna(0).astype(int)
+    out["memory_probe_target_match"] = np.where(needs_memory == 1, out["target_match"], np.nan)
+    out["memory_probe_safe_clarification"] = np.where(needs_memory == 1, out["safe_clarification"], np.nan)
+    out["memory_probe_unsafe_wrong_target"] = np.where(needs_memory == 1, out["unsafe_wrong_target"], np.nan)
+    out["binding_precision_on_memory_probes"] = np.where(
+        (needs_memory == 1) & (out["binding_attempt"] > 0),
+        out["target_match"],
+        np.nan,
+    )
+    return out
 
 
 def compute_hallucination(row: pd.Series) -> float:
@@ -388,6 +501,14 @@ def add_episode_level(df: pd.DataFrame) -> pd.DataFrame:
         p0_sla_judge=("on_time_judge_p0", "mean"),
         p1_sla_judge=("on_time_judge_p1", "mean"),
         info_sufficient_rate=("info_sufficient", "mean"),
+        target_match=("target_match", "mean"),
+        safe_clarification=("safe_clarification", "mean"),
+        unsafe_wrong_target=("unsafe_wrong_target", "mean"),
+        binding_attempt_rate=("binding_attempt", "mean"),
+        memory_probe_target_match=("memory_probe_target_match", "mean"),
+        memory_probe_safe_clarification=("memory_probe_safe_clarification", "mean"),
+        memory_probe_unsafe_wrong_target=("memory_probe_unsafe_wrong_target", "mean"),
+        binding_precision_on_memory_probes=("binding_precision_on_memory_probes", "mean"),
         api_error_rate=("api_error", "mean"),
         invalid_rate=("invalid_output", "mean"),
         input_tokens=("input_tokens", "sum"),
@@ -551,6 +672,7 @@ def main() -> None:
         judge_meta = pd.concat([prevm, judge_meta], ignore_index=True).drop_duplicates(subset=["message_id"], keep="last")
 
     full = df.merge(judged, on="message_id", how="left")
+    full = ensure_binding_columns(full)
     # Compute judged scores.
     full["priority_judge_score"] = full["priority_grade"].map(lambda x: grade_to_score(str(x)))
     full["reply_judge_score"] = full["reply_grade"].map(lambda x: grade_to_score(str(x)))
@@ -590,6 +712,14 @@ def main() -> None:
         p0_sla=("p0_sla_judge", "mean"),
         p1_sla=("p1_sla_judge", "mean"),
         info_sufficient_rate=("info_sufficient_rate", "mean"),
+        target_match=("target_match", "mean"),
+        safe_clarification=("safe_clarification", "mean"),
+        unsafe_wrong_target=("unsafe_wrong_target", "mean"),
+        binding_attempt_rate=("binding_attempt_rate", "mean"),
+        memory_probe_target_match=("memory_probe_target_match", "mean"),
+        memory_probe_safe_clarification=("memory_probe_safe_clarification", "mean"),
+        memory_probe_unsafe_wrong_target=("memory_probe_unsafe_wrong_target", "mean"),
+        binding_precision_on_memory_probes=("binding_precision_on_memory_probes", "mean"),
         api_error_rate=("api_error_rate", "mean"),
         invalid_rate=("invalid_rate", "mean"),
         judge_input_tokens=("input_tokens", "sum"),
@@ -641,7 +771,9 @@ def main() -> None:
         lines.append(
             f"- N={int(r['n_threads'])}: quality={r['mean_quality']:.3f} "
             f"(ci95 {r['quality_ci95_lo']:.3f}-{r['quality_ci95_hi']:.3f}), "
-            f"p0_sla={r['p0_sla']:.3f}, info_sufficient={r['info_sufficient_rate']:.3f}"
+            f"p0_sla={r['p0_sla']:.3f}, info_sufficient={r['info_sufficient_rate']:.3f}, "
+            f"target_match={r['target_match']:.3f}, safe_clarify={r['safe_clarification']:.3f}, "
+            f"wrong_target={r['unsafe_wrong_target']:.3f}, probe_precision={r['binding_precision_on_memory_probes']:.3f}"
         )
     lines.append("")
     lines.append(f"- Estimated N* (quality+SLA): **{n_star if n_star is not None else 'none'}**")

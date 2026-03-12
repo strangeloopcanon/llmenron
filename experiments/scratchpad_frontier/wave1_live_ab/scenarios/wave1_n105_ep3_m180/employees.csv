@@ -1,0 +1,25 @@
+employee_id,persona_name,workload_tier,target_active_threads,monthly_message_volume_proxy,seniority_proxy
+emp-001,Morgan Clark,low_volume,36.01,354,1
+emp-002,Jamie Miller,low_volume,22.47,317,4
+emp-003,Cameron Chen,low_volume,32.28,497,3
+emp-004,Taylor Chen,low_volume,38.85,509,5
+emp-005,Alex Brown,low_volume,36.98,379,5
+emp-006,Alex Patel,low_volume,39.45,493,4
+emp-007,Morgan Clark,low_volume,30.09,671,4
+emp-008,Riley Chen,low_volume,32.07,574,1
+emp-009,Avery Miller,mid_volume,53.97,994,2
+emp-010,Avery Lee,mid_volume,45.65,720,3
+emp-011,Jamie Chen,mid_volume,60.42,874,2
+emp-012,Sam Patel,mid_volume,56.11,1063,5
+emp-013,Riley Clark,mid_volume,39.72,1019,3
+emp-014,Cameron Kim,mid_volume,51.31,948,4
+emp-015,Cameron Lee,mid_volume,52.27,1049,4
+emp-016,Riley Kim,mid_volume,55.94,579,4
+emp-017,Alex Patel,mid_volume,46.03,759,2
+emp-018,Jordan Clark,mid_volume,42.47,1113,3
+emp-019,Casey Brown,mid_volume,47.24,935,1
+emp-020,Casey Garcia,high_volume,79.97,1477,3
+emp-021,Avery Clark,high_volume,80.88,1533,1
+emp-022,Sam Khan,high_volume,55.99,1774,2
+emp-023,Casey Miller,high_volume,78.53,1450,5
+emp-024,Jamie Garcia,high_volume,64.53,1759,1

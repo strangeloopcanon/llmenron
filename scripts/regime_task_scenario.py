@@ -60,21 +60,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--events-metadata",
         type=Path,
-        default=Path("results/rosetta/enron_rosetta_events_metadata.parquet"),
+        default=Path("experiments/org_simulator/rosetta/enron_rosetta_events_metadata.parquet"),
     )
     parser.add_argument(
         "--events-content",
         type=Path,
-        default=Path("results/rosetta/enron_rosetta_events_content.parquet"),
+        default=Path("experiments/org_simulator/rosetta/enron_rosetta_events_content.parquet"),
     )
     parser.add_argument(
         "--header-cache",
         type=Path,
         default=Path("data/enron_headers_1997_2003.parquet"),
     )
-    parser.add_argument("--regimes-dir", type=Path, default=Path("results/regimes"))
-    parser.add_argument("--tasks-dir", type=Path, default=Path("results/tasks"))
-    parser.add_argument("--scenarios-dir", type=Path, default=Path("results/scenarios"))
+    parser.add_argument("--regimes-dir", type=Path, default=Path("experiments/org_simulator/regimes"))
+    parser.add_argument("--tasks-dir", type=Path, default=Path("experiments/org_simulator/tasks"))
+    parser.add_argument("--scenarios-dir", type=Path, default=Path("experiments/org_simulator/scenarios"))
     parser.add_argument("--coverage-threshold", type=float, default=0.60)
     parser.add_argument("--window-weeks", type=int, default=12)
     parser.add_argument("--min-break-gap-weeks", type=int, default=12)

@@ -1,0 +1,14 @@
+{
+  "scenario_tag": "wave1_n105_ep3_m180",
+  "seed": 42,
+  "n_values": [
+    105
+  ],
+  "episodes_per_n": 3,
+  "messages_per_episode": 180,
+  "employees": 24,
+  "context_memory_rate": 0.307,
+  "median_active_threads": 49.970099667774086,
+  "median_p90_active_threads": 104.5,
+  "filler_source": "template"
+}

@@ -18,22 +18,22 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--breakpoint-cards",
         type=Path,
-        default=Path("results/scenarios/enron_breakpoint_cards.csv"),
+        default=Path("experiments/org_simulator/scenarios/enron_breakpoint_cards.csv"),
     )
     parser.add_argument(
         "--regime-cards",
         type=Path,
-        default=Path("results/scenarios/enron_regime_cards.csv"),
+        default=Path("experiments/org_simulator/scenarios/enron_regime_cards.csv"),
     )
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("results/scenarios/config_pack"),
+        default=Path("experiments/org_simulator/scenarios/config_pack"),
     )
     parser.add_argument(
         "--metadata-file",
         type=Path,
-        default=Path("results/scenarios/config_pack/index.json"),
+        default=Path("experiments/org_simulator/scenarios/config_pack/index.json"),
     )
     return parser.parse_args()
 
@@ -205,4 +205,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

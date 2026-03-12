@@ -14,12 +14,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--runs-dir",
         type=Path,
-        default=Path("results/llm_eval_runs"),
+        default=Path("experiments/llm_eval/llm_eval_runs"),
     )
     parser.add_argument(
         "--output-prefix",
         type=Path,
-        default=Path("results/llm_eval_runs/run_comparison_gpt52"),
+        default=Path("experiments/llm_eval/llm_eval_runs/run_comparison_gpt52"),
     )
     return parser.parse_args()
 

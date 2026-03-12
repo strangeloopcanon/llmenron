@@ -1,0 +1,11 @@
+episode_id,employee_id,n_threads,messages_in_episode
+ep-00000,emp-003,35,80
+ep-00001,emp-019,35,80
+ep-00002,emp-017,50,80
+ep-00003,emp-021,50,80
+ep-00004,emp-024,70,80
+ep-00005,emp-007,70,80
+ep-00006,emp-015,105,80
+ep-00007,emp-018,105,80
+ep-00008,emp-018,140,80
+ep-00009,emp-019,140,80

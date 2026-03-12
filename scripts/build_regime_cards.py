@@ -19,27 +19,27 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--regime-signatures",
         type=Path,
-        default=Path("results/regimes/enron_regime_signatures.parquet"),
+        default=Path("experiments/org_simulator/regimes/enron_regime_signatures.parquet"),
     )
     parser.add_argument(
         "--breakpoints-json",
         type=Path,
-        default=Path("results/regimes/enron_breakpoints.json"),
+        default=Path("experiments/org_simulator/regimes/enron_breakpoints.json"),
     )
     parser.add_argument(
         "--task-distribution",
         type=Path,
-        default=Path("results/tasks/enron_task_distribution_by_regime.parquet"),
+        default=Path("experiments/org_simulator/tasks/enron_task_distribution_by_regime.parquet"),
     )
     parser.add_argument(
         "--dependency-graph",
         type=Path,
-        default=Path("results/tasks/enron_task_dependency_graph.parquet"),
+        default=Path("experiments/org_simulator/tasks/enron_task_dependency_graph.parquet"),
     )
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("results/scenarios"),
+        default=Path("experiments/org_simulator/scenarios"),
     )
     return parser.parse_args()
 

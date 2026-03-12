@@ -4,7 +4,7 @@
 Goal: score *judgment* (reasonableness) rather than compliance with heuristic labels.
 
 Inputs:
-- run-dir: results/llm_eval_runs/<tag>/llm_eval_message_log.csv (produced by llm_capacity_eval.py)
+- run-dir: experiments/llm_eval/llm_eval_runs/<tag>/llm_eval_message_log.csv (produced by llm_capacity_eval.py)
 
 Outputs (written under run-dir):
 - judged_message_log.csv: per-message judge outputs + derived scores

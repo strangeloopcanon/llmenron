@@ -1,0 +1,4 @@
+run_name,agent,model,reasoning_mode,n_values,episodes_per_n,score_threshold_q,p0_sla_threshold,memory_policy
+gpt-5.2_auto,openai,gpt-5.2,auto,"35,50,70,105,140",2,0.75,0.9,scratchpad_only
+gpt-5.2_high,openai,gpt-5.2,high,"35,50,70,105,140",2,0.75,0.9,scratchpad_only
+heuristic_baseline,heuristic,n/a,n/a,"35,50,70,105,140",2,0.75,0.9,scratchpad_only

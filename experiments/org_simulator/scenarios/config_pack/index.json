@@ -1,0 +1,74 @@
+[
+  {
+    "shock_id": "shock_1997-06-09_r0_to_r1",
+    "file": "experiments/org_simulator/scenarios/config_pack/shock_1997-06-09_r0_to_r1.json",
+    "break_week": "1997-06-09",
+    "from_regime": 0,
+    "to_regime": 1,
+    "shock_type": "volume_surge",
+    "arrival_multiplier": 2.0385044642857144,
+    "thread_multiplier": 2.101293103448276,
+    "recommended_post_messages": 20,
+    "recommended_post_threads": 6
+  },
+  {
+    "shock_id": "shock_1997-10-20_r1_to_r2",
+    "file": "experiments/org_simulator/scenarios/config_pack/shock_1997-10-20_r1_to_r2.json",
+    "break_week": "1997-10-20",
+    "from_regime": 1,
+    "to_regime": 2,
+    "shock_type": "contraction_with_risk_escalation",
+    "arrival_multiplier": 0.4730358609362168,
+    "thread_multiplier": 0.6235897435897435,
+    "recommended_post_messages": 20,
+    "recommended_post_threads": 6
+  },
+  {
+    "shock_id": "shock_1998-11-30_r2_to_r3",
+    "file": "experiments/org_simulator/scenarios/config_pack/shock_1998-11-30_r2_to_r3.json",
+    "break_week": "1998-11-30",
+    "from_regime": 2,
+    "to_regime": 3,
+    "shock_type": "volume_surge",
+    "arrival_multiplier": 2.9269005847953213,
+    "thread_multiplier": 3.9432132963988926,
+    "recommended_post_messages": 20,
+    "recommended_post_threads": 6
+  },
+  {
+    "shock_id": "shock_1999-04-12_r3_to_r4",
+    "file": "experiments/org_simulator/scenarios/config_pack/shock_1999-04-12_r3_to_r4.json",
+    "break_week": "1999-04-12",
+    "from_regime": 3,
+    "to_regime": 4,
+    "shock_type": "surge_plus_risk",
+    "arrival_multiplier": 102.84785424549204,
+    "thread_multiplier": 70.39761981807068,
+    "recommended_post_messages": 119,
+    "recommended_post_threads": 39
+  },
+  {
+    "shock_id": "shock_2001-09-17_r4_to_r5",
+    "file": "experiments/org_simulator/scenarios/config_pack/shock_2001-09-17_r4_to_r5.json",
+    "break_week": "2001-09-17",
+    "from_regime": 4,
+    "to_regime": 5,
+    "shock_type": "volume_surge",
+    "arrival_multiplier": 1.6426767525700163,
+    "thread_multiplier": 2.670424838186917,
+    "recommended_post_messages": 196,
+    "recommended_post_threads": 103
+  },
+  {
+    "shock_id": "shock_2002-02-04_r5_to_r6",
+    "file": "experiments/org_simulator/scenarios/config_pack/shock_2002-02-04_r5_to_r6.json",
+    "break_week": "2002-02-04",
+    "from_regime": 5,
+    "to_regime": 6,
+    "shock_type": "contraction_with_risk_escalation",
+    "arrival_multiplier": 0.090456542641886,
+    "thread_multiplier": 0.0915245633061817,
+    "recommended_post_messages": 20,
+    "recommended_post_threads": 9
+  }
+]
