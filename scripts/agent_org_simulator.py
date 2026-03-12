@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import random
@@ -53,13 +54,55 @@ TASK_KIND_MAP = {
     "cross_team_program": "program",
 }
 
+TASK_ROUTE_TO = {
+    "approval": "approvals_queue",
+    "specialist": "specialist_queue",
+    "program": "program_pm",
+    "quick": "ops_triage",
+    "ops": "ops_triage",
+}
+
+TASK_REPLY_IDENTITIES = {
+    "approval": "approvals_desk",
+    "specialist": "specialist_desk",
+    "program": "program_pm",
+    "quick": "ops_desk",
+    "ops": "ops_desk",
+}
+
+TASK_ASSIGNEES = {
+    "approval": "agent_0",
+    "specialist": "agent_0",
+    "program": "agent_2",
+    "quick": "agent_1",
+    "ops": "agent_1",
+}
+
+ROUTE_TO_ASSIGNEE = {
+    "approvals_queue": "agent_0",
+    "specialist_queue": "agent_0",
+    "program_pm": "agent_2",
+    "ops_triage": "agent_1",
+}
+
+ROUTE_TO_CHOICES = ["ops_triage", "approvals_queue", "specialist_queue", "program_pm"]
+RESPOND_AS_CHOICES = ["ops_desk", "approvals_desk", "specialist_desk", "program_pm"]
+
+DEFAULT_BOARD_APPROVERS = {
+    "approval": "agent_0",
+    "specialist": "agent_0",
+    "program": "agent_1",
+    "quick": "",
+    "ops": "",
+}
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--config-dir",
         type=Path,
-        default=Path("results/scenarios/config_pack"),
+        default=Path("experiments/org_simulator/scenarios/config_pack"),
     )
     parser.add_argument(
         "--shock-id",
@@ -96,7 +139,19 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--max-total-calls", type=int, default=6000)
-    parser.add_argument("--output-dir", type=Path, default=Path("results/simulator_runs"))
+    parser.add_argument(
+        "--board-mode",
+        choices=["shared", "oracle", "off"],
+        default="shared",
+        help="shared = learned shared task board, oracle = preseed board with gold facts, off = no shared board.",
+    )
+    parser.add_argument(
+        "--team-size-override",
+        type=int,
+        default=0,
+        help="0 uses routing policy default; positive value forces the same team size in all phases.",
+    )
+    parser.add_argument("--output-dir", type=Path, default=Path("experiments/org_simulator/simulator_runs"))
     parser.add_argument("--input-cost-per-1m", type=float, default=0.0)
     parser.add_argument("--output-cost-per-1m", type=float, default=0.0)
     return parser.parse_args()
@@ -143,6 +198,10 @@ def make_project_code(rng: np.random.Generator) -> str:
     return f"{str(rng.choice(list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')))}{int(rng.integers(100, 999))}"
 
 
+def make_task_id(*, phase: str, episode_id: int, thread_idx: int) -> str:
+    return f"TASK-{phase.upper()}-{episode_id:03d}-{thread_idx:03d}"
+
+
 def build_message_text(
     *,
     task_kind: str,
@@ -154,7 +213,7 @@ def build_message_text(
     approval_flag: bool,
     fanout_hint: int,
     anchor: bool,
-) -> tuple[str, str, str, str]:
+) -> tuple[str, str, str, str, str]:
     if task_kind == "approval":
         subject = f"Approval needed for {project_code}"
         reply_type = "ANSWER"
@@ -221,8 +280,16 @@ class SimMessage:
     episode_id: int
     arrival_min: float
     thread_id: str
+    task_id: str
     subject: str
     body: str
+    gold_project_code: str
+    gold_owner: str
+    gold_assignee: str
+    gold_status: str
+    gold_approver: str
+    gold_allowed_responder: str
+    gold_reply_identity: str
     gold_priority: str
     gold_reply_type: str
     gold_required_key: str
@@ -252,7 +319,21 @@ def generate_episode_messages(
     episode_minutes = float(max(60, episode_hours * 60))
     avg_gap = episode_minutes / n_msgs
     threads = [f"{phase}_ep{episode_id:03d}_th{i+1:03d}" for i in range(n_threads)]
-    thread_facts = {tid: {"project_code": make_project_code(rng)} for tid in threads}
+    thread_facts = {}
+    for idx, tid in enumerate(threads, start=1):
+        project_code = make_project_code(rng)
+        task_kind = parse_task_kind(pick_task_type(task_probs, rng))
+        thread_facts[tid] = {
+            "task_id": make_task_id(phase=phase, episode_id=episode_id, thread_idx=idx),
+            "project_code": project_code,
+            "task_kind": task_kind,
+            "owner": TASK_ROUTE_TO.get(task_kind, "ops_triage"),
+            "assignee": TASK_ASSIGNEES.get(task_kind, "agent_1"),
+            "status": "new",
+            "approver": DEFAULT_BOARD_APPROVERS.get(task_kind, ""),
+            "allowed_responder": TASK_REPLY_IDENTITIES.get(task_kind, "ops_desk"),
+            "reply_identity": TASK_REPLY_IDENTITIES.get(task_kind, "ops_desk"),
+        }
     thread_seen = {tid: 0 for tid in threads}
 
     current_time = 0.0
@@ -269,7 +350,8 @@ def generate_episode_messages(
                 tid = str(rng.choice(threads))
             current_thread = tid
 
-        project_code = thread_facts[tid]["project_code"]
+        task_facts = thread_facts[tid]
+        project_code = str(task_facts["project_code"])
         anchor = thread_seen[tid] == 0
         needs_memory = (not anchor) and (rng.random() < clamp(0.20 + 0.4 * specialist_prob, 0.05, 0.6))
         escalation_flag = int(rng.random() < escalation_prob)
@@ -277,8 +359,7 @@ def generate_episode_messages(
         approval_flag = int(rng.random() < approval_prob)
         fanout_hint = int(max(1, round(fanout_target + rng.normal(0, 1))))
 
-        task_type = pick_task_type(task_probs, rng)
-        task_kind = parse_task_kind(task_type)
+        task_kind = str(task_facts["task_kind"])
 
         subject, body, priority, reply_type, required_key = build_message_text(
             task_kind=task_kind,
@@ -305,8 +386,16 @@ def generate_episode_messages(
                 episode_id=episode_id,
                 arrival_min=round(current_time, 3),
                 thread_id=tid,
+                task_id=str(task_facts["task_id"]),
                 subject=subject,
                 body=body,
+                gold_project_code=project_code,
+                gold_owner=str(task_facts["owner"]),
+                gold_assignee=str(task_facts["assignee"]),
+                gold_status=str(task_facts["status"]),
+                gold_approver=str(task_facts["approver"]),
+                gold_allowed_responder=str(task_facts["allowed_responder"]),
+                gold_reply_identity=str(task_facts["reply_identity"]),
                 gold_priority=priority,
                 gold_reply_type=reply_type,
                 gold_required_key=required_key,
@@ -324,7 +413,14 @@ def generate_episode_messages(
 class HeuristicAgent:
     name = "heuristic"
 
-    def decide(self, email: dict[str, Any], scratchpad: str, backlog: int) -> tuple[dict[str, Any], dict[str, Any]]:
+    def decide(
+        self,
+        email: dict[str, Any],
+        scratchpad: str,
+        backlog: int,
+        *,
+        task_board_entry: dict[str, Any] | None = None,
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         _ = backlog
         text = f"{email['subject']} {email['body']}".lower()
         if "urgent" in text or "escalation" in text or "today" in text:
@@ -343,7 +439,14 @@ class HeuristicAgent:
             reply_type = "ANSWER"
 
         code = ""
-        for src in [email["subject"], email["body"], scratchpad]:
+        board_project = str((task_board_entry or {}).get("project_code", "")).strip()
+        board_route = str((task_board_entry or {}).get("route_to", "")).strip()
+        board_reply_identity = str((task_board_entry or {}).get("reply_identity", "")).strip()
+        if not board_route or not board_reply_identity:
+            inferred_route, inferred_reply_identity = infer_actor_labels_from_text(text)
+            board_route = board_route or inferred_route
+            board_reply_identity = board_reply_identity or inferred_reply_identity
+        for src in [board_project, email["subject"], email["body"], scratchpad]:
             m = re.search(r"\b[A-Z][0-9]{3}\b", str(src))
             if m:
                 code = m.group(0)
@@ -360,8 +463,12 @@ class HeuristicAgent:
                 "reply_type": reply_type,
                 "action_summary": action,
                 "facts_used": facts,
+                "target_project_code": code,
                 "draft_reply": draft,
                 "scratchpad_update": update,
+                "route_to": board_route,
+                "respond_as": board_reply_identity,
+                "needs_handoff": False,
             },
             {"latency_sec": 0.03, "input_tokens": 0, "output_tokens": 0, "raw_invalid": 0},
         )
@@ -396,11 +503,18 @@ class OpenAIAgent:
         rubric = RUBRIC_MEANING if str(prompt_profile) == "meaning" else RUBRIC_STRICT
         self.system_prompt = (
             "You are an organizational inbox triage agent. "
-            "Use only current email + provided scratchpad. "
-            "Return strict JSON with fields: priority, reply_type, action_summary, facts_used, draft_reply, scratchpad_update. "
+            "Use only current email + provided scratchpad + optional task_board_entry for the current thread. "
+            "Return strict JSON with fields: priority, reply_type, action_summary, facts_used, target_project_code, "
+            "draft_reply, scratchpad_update, route_to, respond_as, needs_handoff. "
+            "Use route_to for internal ownership/routing and respond_as for the outward reply identity or alias. "
+            f"Allowed route_to values: {', '.join(ROUTE_TO_CHOICES)}. "
+            f"Allowed respond_as values: {', '.join(RESPOND_AS_CHOICES)}. "
             "priority in {P0,P1,P2}; reply_type in {NONE,ACK,ANSWER,REQUEST_INFO,REDIRECT}. "
             f"{rubric} "
             f"{MEMORY_CONTRACT} "
+            "When task_board_entry includes a project_code, route_to, or reply_identity, use those instead of guessing. "
+            "Keep route_to and respond_as stable for a thread unless the email clearly indicates a handoff. "
+            "If the target project is unclear, leave target_project_code empty. "
             "Do not invent completed actions that are not in context."
         )
         self.response_schema: dict[str, Any] = {
@@ -414,16 +528,24 @@ class OpenAIAgent:
                 },
                 "action_summary": {"type": "string"},
                 "facts_used": {"type": "array", "items": {"type": "string"}},
+                "target_project_code": {"type": "string"},
                 "draft_reply": {"type": "string"},
                 "scratchpad_update": {"type": "string"},
+                "route_to": {"type": "string", "enum": ROUTE_TO_CHOICES},
+                "respond_as": {"type": "string", "enum": RESPOND_AS_CHOICES},
+                "needs_handoff": {"type": "boolean"},
             },
             "required": [
                 "priority",
                 "reply_type",
                 "action_summary",
                 "facts_used",
+                "target_project_code",
                 "draft_reply",
                 "scratchpad_update",
+                "route_to",
+                "respond_as",
+                "needs_handoff",
             ],
         }
 
@@ -453,8 +575,17 @@ class OpenAIAgent:
                 time.sleep((2**attempt) + float(np.random.uniform(0, 1)))
         raise RuntimeError("Unreachable")
 
-    def decide(self, email: dict[str, Any], scratchpad: str, backlog: int) -> tuple[dict[str, Any], dict[str, Any]]:
+    def decide(
+        self,
+        email: dict[str, Any],
+        scratchpad: str,
+        backlog: int,
+        *,
+        task_board_entry: dict[str, Any] | None = None,
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         prompt_obj = {"backlog": backlog, "email": email, "scratchpad": scratchpad}
+        if task_board_entry:
+            prompt_obj["task_board_entry"] = task_board_entry
         payload: dict[str, Any] = {
             "model": self.model,
             "instructions": self.system_prompt,
@@ -521,8 +652,12 @@ def validate_decision(decision: dict[str, Any]) -> tuple[dict[str, Any], int]:
         "reply_type": decision.get("reply_type", "NONE"),
         "action_summary": decision.get("action_summary", ""),
         "facts_used": decision.get("facts_used", []),
+        "target_project_code": decision.get("target_project_code", ""),
         "draft_reply": decision.get("draft_reply", ""),
         "scratchpad_update": decision.get("scratchpad_update", ""),
+        "route_to": decision.get("route_to", ""),
+        "respond_as": decision.get("respond_as", ""),
+        "needs_handoff": bool(decision.get("needs_handoff", False)),
     }
     if out["priority"] not in REQUIRED_PRIORITIES:
         out["priority"] = "P2"
@@ -533,10 +668,19 @@ def validate_decision(decision: dict[str, Any]) -> tuple[dict[str, Any], int]:
     if not isinstance(out["facts_used"], list):
         out["facts_used"] = []
         invalid = 1
-    for key in ["action_summary", "draft_reply", "scratchpad_update"]:
+    for key in ["action_summary", "target_project_code", "draft_reply", "scratchpad_update", "route_to", "respond_as"]:
         if not isinstance(out[key], str):
             out[key] = str(out[key])
             invalid = 1
+    if not isinstance(out["needs_handoff"], bool):
+        out["needs_handoff"] = bool(out["needs_handoff"])
+        invalid = 1
+    if out["route_to"] and out["route_to"] not in ROUTE_TO_CHOICES:
+        out["route_to"] = ""
+        invalid = 1
+    if out["respond_as"] and out["respond_as"] not in RESPOND_AS_CHOICES:
+        out["respond_as"] = ""
+        invalid = 1
     return out, invalid
 
 
@@ -563,10 +707,21 @@ def choose_agent_idx(
     message: SimMessage,
     rng: np.random.Generator,
     available_times: list[float],
+    task_board: dict[str, dict[str, Any]] | None = None,
 ) -> int:
     n = len(available_times)
     if n == 1:
         return 0
+    if task_board:
+        entry = task_board.get(message.thread_id, {})
+        assignee = str(entry.get("assignee", entry.get("owner", ""))).strip()
+        if assignee.startswith("agent_"):
+            try:
+                idx = int(assignee.split("_", 1)[1])
+            except ValueError:
+                idx = -1
+            if 0 <= idx < n:
+                return idx
     if "risk_first" in policy:
         if message.escalation_flag or message.specialist_flag or message.approval_flag:
             return 0  # specialist gate
@@ -587,14 +742,67 @@ def trim_text(text: str, max_chars: int) -> str:
     return text[-max_chars:]
 
 
+def model_supports_temperature(model: str) -> bool:
+    model_name = str(model or "").strip().lower()
+    return model_name not in {"gpt-5-mini"}
+
+
+def assignee_for_route(route_to: str, team_n: int) -> str:
+    raw = str(ROUTE_TO_ASSIGNEE.get(str(route_to).strip(), "agent_1"))
+    if not raw.startswith("agent_"):
+        return "agent_0"
+    try:
+        idx = int(raw.split("_", 1)[1])
+    except ValueError:
+        return "agent_0"
+    if team_n <= 1:
+        return "agent_0"
+    idx = max(0, min(idx, team_n - 1))
+    return f"agent_{idx}"
+
+
+def infer_actor_labels_from_text(text: str) -> tuple[str, str]:
+    s = str(text).lower()
+    if "approval" in s:
+        return "approvals_queue", "approvals_desk"
+    if "specialist" in s or "legal" in s or "trading specialist" in s:
+        return "specialist_queue", "specialist_desk"
+    if "cross-team" in s or "program" in s:
+        return "program_pm", "program_pm"
+    return "ops_triage", "ops_desk"
+
+
+def stable_seed_offset(*parts: str, mod: int = 100_000) -> int:
+    digest = hashlib.sha256("::".join(str(p) for p in parts).encode("utf-8")).hexdigest()
+    return int(digest[:12], 16) % mod
+
+
 def score_message(msg: SimMessage, decision: dict[str, Any], process_end_min: float) -> dict[str, float]:
     priority_acc = float(decision["priority"] == msg.gold_priority)
     reply_acc = float(decision["reply_type"] == msg.gold_reply_type)
-    text_blob = f"{decision['action_summary']} {decision['draft_reply']} {' '.join(str(x) for x in decision['facts_used'])}".lower()
+    pred_target = str(decision.get("target_project_code", "")).strip()
+    pred_route = str(decision.get("route_to", "")).strip()
+    pred_respond_as = str(decision.get("respond_as", "")).strip()
+    text_blob = (
+        f"{decision['action_summary']} {decision['draft_reply']} {pred_target} "
+        f"{' '.join(str(x) for x in decision['facts_used'])}"
+    ).lower()
     if msg.gold_required_key == "none":
         fact_recall = 1.0
     else:
         fact_recall = float(msg.gold_required_value.lower() in text_blob)
+    target_match = float(bool(pred_target) and pred_target == msg.gold_project_code)
+    owner_match = float(bool(pred_route) and pred_route == msg.gold_owner) if msg.gold_owner else 1.0
+    reply_identity_match = (
+        float(bool(pred_respond_as) and pred_respond_as == msg.gold_reply_identity)
+        if msg.gold_reply_identity
+        else 1.0
+    )
+    unauthorized_response = (
+        float(bool(pred_respond_as) and pred_respond_as != msg.gold_reply_identity)
+        if msg.gold_reply_identity
+        else 0.0
+    )
     halluc = hallucination_penalty(decision["draft_reply"], f"{msg.subject}\n{msg.body}")
     latency_min = process_end_min - msg.arrival_min
     on_time = float(latency_min <= PRIORITY_SLA_MIN[msg.gold_priority])
@@ -606,6 +814,10 @@ def score_message(msg: SimMessage, decision: dict[str, Any], process_end_min: fl
         "priority_acc": priority_acc,
         "reply_acc": reply_acc,
         "fact_recall": fact_recall,
+        "target_match": target_match,
+        "owner_match": owner_match,
+        "reply_identity_match": reply_identity_match,
+        "unauthorized_response": unauthorized_response,
         "hallucination": halluc,
         "latency_min": latency_min,
         "on_time": on_time,
@@ -625,10 +837,13 @@ def run_episode(
     scratchpad_budget: int,
     rng: np.random.Generator,
     call_budget: int,
+    board_mode: str,
+    team_size_override: int,
 ) -> tuple[pd.DataFrame, dict[str, float], int]:
-    team_n = team_size_from_policy(policy)
+    team_n = int(team_size_override) if int(team_size_override) > 0 else team_size_from_policy(policy)
     agent_available = [0.0 for _ in range(team_n)]
     scratchpads = ["" for _ in range(team_n)]
+    task_board: dict[str, dict[str, Any]] | None = {} if board_mode != "off" else None
     rows: list[dict[str, Any]] = []
 
     total_input_tokens = 0
@@ -640,17 +855,32 @@ def run_episode(
     for msg in messages:
         if calls >= call_budget:
             raise RuntimeError(f"Max calls reached ({call_budget})")
+        if task_board is not None and msg.thread_id not in task_board:
+            task_board[msg.thread_id] = {
+                "task_id": msg.task_id,
+                "project_code": msg.gold_project_code if board_mode == "oracle" else "",
+                "route_to": msg.gold_owner if board_mode == "oracle" else "",
+                "assignee": msg.gold_assignee if board_mode == "oracle" else "",
+                "status": msg.gold_status if board_mode == "oracle" else "new",
+                "approver": msg.gold_approver if board_mode == "oracle" else "",
+                "reply_identity": msg.gold_reply_identity if board_mode == "oracle" else "",
+                "last_actor": "",
+                "last_update": float(msg.arrival_min),
+            }
         agent_idx = choose_agent_idx(
             policy=policy,
             message=msg,
             rng=rng,
             available_times=agent_available,
+            task_board=task_board,
         )
         start_min = max(float(msg.arrival_min), float(agent_available[agent_idx]))
         backlog = int(sum(1 for t in agent_available if t > msg.arrival_min))
+        task_board_entry = dict(task_board[msg.thread_id]) if task_board is not None else {}
         email = {
             "message_id": msg.message_id,
             "thread_id": msg.thread_id,
+            "task_id": msg.task_id,
             "subject": msg.subject,
             "body": msg.body,
             "arrival_min": msg.arrival_min,
@@ -665,6 +895,7 @@ def run_episode(
                 email=email,
                 scratchpad=scratchpads[agent_idx],
                 backlog=backlog,
+                task_board_entry=task_board_entry,
             )
         except Exception as exc:  # pragma: no cover
             api_error = 1
@@ -673,8 +904,12 @@ def run_episode(
                 "reply_type": "NONE",
                 "action_summary": "",
                 "facts_used": [],
+                "target_project_code": "",
                 "draft_reply": "",
                 "scratchpad_update": "",
+                "route_to": "",
+                "respond_as": "",
+                "needs_handoff": False,
             }
             meta = {
                 "latency_sec": 1.0,
@@ -700,6 +935,30 @@ def run_episode(
                 max_chars=scratchpad_budget,
             )
 
+        board_entry = {}
+        if task_board is not None:
+            board_entry = task_board[msg.thread_id]
+            if not str(board_entry.get("project_code", "")).strip() and decision["target_project_code"]:
+                board_entry["project_code"] = decision["target_project_code"]
+            if str(decision.get("route_to", "")).strip():
+                route_to = str(decision["route_to"]).strip()
+                board_entry["route_to"] = route_to
+                board_entry["assignee"] = assignee_for_route(route_to, team_n)
+            elif not str(board_entry.get("assignee", "")).strip():
+                board_entry["assignee"] = f"agent_{agent_idx}"
+            if msg.approval_flag:
+                board_entry["status"] = "awaiting_approval"
+            elif decision["reply_type"] == "REQUEST_INFO":
+                board_entry["status"] = "needs_info"
+            else:
+                board_entry["status"] = "triaged"
+            if not str(board_entry.get("approver", "")).strip() and msg.approval_flag:
+                board_entry["approver"] = "agent_0"
+            if str(decision.get("respond_as", "")).strip():
+                board_entry["reply_identity"] = str(decision["respond_as"]).strip()
+            board_entry["last_actor"] = f"agent_{agent_idx}"
+            board_entry["last_update"] = round(end_min, 3)
+
         scores = score_message(msg, decision, process_end_min=end_min)
         total_input_tokens += int(meta.get("input_tokens", 0))
         total_output_tokens += int(meta.get("output_tokens", 0))
@@ -709,25 +968,44 @@ def run_episode(
                 "episode_id": msg.episode_id,
                 "message_id": msg.message_id,
                 "thread_id": msg.thread_id,
+                "task_id": msg.task_id,
                 "arrival_min": msg.arrival_min,
                 "start_min": start_min,
                 "end_min": end_min,
                 "agent_idx": agent_idx,
                 "routing_policy": policy,
+                "board_mode": board_mode,
                 "subject": msg.subject,
                 "body": msg.body,
                 "gold_priority": msg.gold_priority,
+                "gold_project_code": msg.gold_project_code,
+                "gold_owner": msg.gold_owner,
+                "gold_assignee": msg.gold_assignee,
+                "gold_status": msg.gold_status,
+                "gold_approver": msg.gold_approver,
+                "gold_allowed_responder": msg.gold_allowed_responder,
+                "gold_reply_identity": msg.gold_reply_identity,
                 "pred_priority": decision["priority"],
                 "gold_reply_type": msg.gold_reply_type,
                 "pred_reply_type": decision["reply_type"],
                 "pred_action_summary": decision["action_summary"],
                 "pred_facts_used": json.dumps(decision["facts_used"], ensure_ascii=True),
+                "pred_target_project_code": decision["target_project_code"],
                 "pred_draft_reply": decision["draft_reply"],
                 "pred_scratchpad_update": decision["scratchpad_update"],
+                "pred_route_to": decision["route_to"],
+                "pred_respond_as": decision["respond_as"],
+                "pred_needs_handoff": int(bool(decision["needs_handoff"])),
+                "task_board_entry": json.dumps(task_board_entry, ensure_ascii=True),
+                "task_board_route_to_after": str(board_entry.get("route_to", "")),
+                "task_board_assignee_after": str(board_entry.get("assignee", "")),
+                "task_board_status_after": str(board_entry.get("status", "")),
+                "task_board_reply_identity_after": str(board_entry.get("reply_identity", "")),
                 "gold_required_key": msg.gold_required_key,
                 "gold_required_value": msg.gold_required_value,
                 "invalid_output": invalid_total,
                 "api_error": api_error,
+                "api_error_text": str(meta.get("error", "")),
                 "input_tokens": int(meta.get("input_tokens", 0)),
                 "output_tokens": int(meta.get("output_tokens", 0)),
                 "scratchpad_len": len(scratchpads[agent_idx]),
@@ -748,6 +1026,10 @@ def run_episode(
         "priority_acc": safe_mean(df["priority_acc"]),
         "reply_acc": safe_mean(df["reply_acc"]),
         "fact_recall": safe_mean(df["fact_recall"]),
+        "target_match": safe_mean(df["target_match"]),
+        "owner_match": safe_mean(df["owner_match"]),
+        "reply_identity_match": safe_mean(df["reply_identity_match"]),
+        "unauthorized_response_rate": safe_mean(df["unauthorized_response"]),
         "memory_fact_recall": safe_mean(mem["fact_recall"]) if len(mem) else 1.0,
         "p0_sla": safe_mean(p0["on_time"]) if len(p0) else 1.0,
         "p1_sla": safe_mean(p1["on_time"]) if len(p1) else 1.0,
@@ -759,6 +1041,7 @@ def run_episode(
         "calls": float(calls),
         "raw_invalid_total": float(raw_invalid_total),
         "team_size": float(team_n),
+        "board_enabled": float(board_mode != "off"),
     }
     return df, metrics, calls
 
@@ -768,7 +1051,19 @@ def load_configs(config_dir: Path, shock_id: str) -> list[Path]:
     if not index_json.exists():
         raise FileNotFoundError(f"Missing config pack index: {index_json}")
     items = json.loads(index_json.read_text(encoding="utf-8"))
-    paths = [Path(x["file"]) for x in items]
+    paths: list[Path] = []
+    for item in items:
+        raw = Path(str(item["file"]))
+        candidates = [
+            raw,
+            config_dir / raw.name,
+            config_dir / raw,
+            Path(str(raw).replace("results/scenarios/config_pack", str(config_dir))),
+        ]
+        resolved = next((p for p in candidates if p.exists()), None)
+        if resolved is None:
+            raise FileNotFoundError(f"Config listed in index was not found: {raw}")
+        paths.append(resolved)
     if shock_id:
         target = config_dir / f"{shock_id}.json"
         if target.exists():
@@ -818,6 +1113,8 @@ def write_report(
         f"- Agent: **{args.agent}**",
         f"- Model: **{args.model if args.agent == 'openai' else 'n/a'}**",
         f"- Episodes per phase: **{int(args.episodes_per_phase)}**",
+        f"- Board mode: **{args.board_mode}**",
+        f"- Team size override: **{int(args.team_size_override) if int(args.team_size_override) > 0 else 'policy default'}**",
         f"- OpenAI reasoning mode: **{args.openai_reasoning_mode if args.agent == 'openai' else 'n/a'}**",
         f"- Estimated API cost: **${total_cost:.4f}**",
         "",
@@ -828,6 +1125,8 @@ def write_report(
             f"- {row.shock_id}: quality pre={row.mean_quality_pre:.3f}, post={row.mean_quality_post:.3f}, "
             f"delta={row.delta_mean_quality:+.3f}; p0_sla pre={row.p0_sla_pre:.3f}, post={row.p0_sla_post:.3f}; "
             f"memory_recall pre={row.memory_fact_recall_pre:.3f}, post={row.memory_fact_recall_post:.3f}; "
+            f"owner_match post={row.owner_match_post:.3f}; reply_identity post={row.reply_identity_match_post:.3f}; "
+            f"unauthorized post={row.unauthorized_response_rate_post:.3f}; "
             f"api_error post={row.api_error_rate_post:.3f}"
         )
     (run_dir / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -848,7 +1147,7 @@ def main() -> None:
             max_attempts=args.openai_max_attempts,
             reasoning_mode=args.openai_reasoning_mode,
             max_output_tokens=args.openai_max_output_tokens,
-            temperature=args.temperature,
+            temperature=args.temperature if model_supports_temperature(args.model) else None,
             prompt_profile=str(args.prompt_profile),
         )
     else:
@@ -879,7 +1178,9 @@ def main() -> None:
             policy = pre_policy if phase == "pre" else post_policy
             hours, msg_target, thread_target = resolve_episode_settings(cfg, phase, args)
             for ep in range(int(args.episodes_per_phase)):
-                rng = np.random.default_rng(args.seed + ep * 1009 + hash(shock_id + phase) % 100_000)
+                rng = np.random.default_rng(
+                    args.seed + ep * 1009 + stable_seed_offset(shock_id, phase)
+                )
                 msgs = generate_episode_messages(
                     phase=phase,
                     episode_id=ep,
@@ -904,6 +1205,8 @@ def main() -> None:
                     scratchpad_budget=5000,
                     rng=rng,
                     call_budget=remaining,
+                    board_mode=str(args.board_mode),
+                    team_size_override=int(args.team_size_override),
                 )
                 total_calls_used += calls_used
                 msg_df["shock_id"] = shock_id
@@ -939,6 +1242,19 @@ def main() -> None:
             "memory_fact_recall_pre": float(df_pre["memory_fact_recall"].mean()),
             "memory_fact_recall_post": float(df_post["memory_fact_recall"].mean()),
             "delta_memory_fact_recall": float(df_post["memory_fact_recall"].mean() - df_pre["memory_fact_recall"].mean()),
+            "owner_match_pre": float(df_pre["owner_match"].mean()),
+            "owner_match_post": float(df_post["owner_match"].mean()),
+            "delta_owner_match": float(df_post["owner_match"].mean() - df_pre["owner_match"].mean()),
+            "reply_identity_match_pre": float(df_pre["reply_identity_match"].mean()),
+            "reply_identity_match_post": float(df_post["reply_identity_match"].mean()),
+            "delta_reply_identity_match": float(
+                df_post["reply_identity_match"].mean() - df_pre["reply_identity_match"].mean()
+            ),
+            "unauthorized_response_rate_pre": float(df_pre["unauthorized_response_rate"].mean()),
+            "unauthorized_response_rate_post": float(df_post["unauthorized_response_rate"].mean()),
+            "delta_unauthorized_response_rate": float(
+                df_post["unauthorized_response_rate"].mean() - df_pre["unauthorized_response_rate"].mean()
+            ),
             "mean_latency_pre": float(df_pre["mean_latency_min"].mean()),
             "mean_latency_post": float(df_post["mean_latency_min"].mean()),
             "delta_mean_latency": float(df_post["mean_latency_min"].mean() - df_pre["mean_latency_min"].mean()),

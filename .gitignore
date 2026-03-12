@@ -30,15 +30,39 @@ __pycache__/
 data/
 raw/
 
-# Results: keep only public-safe artifacts needed for the README
+# Curated results: keep only the published-safe artifacts needed for the README
 results/*
 !results/figures/
 !results/figures/**
-!results/key_results.csv
-!results/human_analysis_summary.md
-!results/scratchpad_canonical_pilot/
-!results/scratchpad_canonical_pilot/canonical_pilot_50_105/
-!results/scratchpad_canonical_pilot/canonical_pilot_50_105/**
+!results/summaries/
+!results/summaries/**
 
-# Older pilot artifact (rubric-compliance scoring) kept locally but not committed.
-results/scratchpad_canonical_pilot/canonical_pilot_50_105/runs/openai_gpt-5.2_20260210T015553Z/
+# Generated experiment artifacts: keep reusable inputs/configs, ignore run exhaust
+experiments/**/runs/
+experiments/**/llm_eval_runs/
+experiments/org_simulator/simulator_runs/
+experiments/reference_data/
+experiments/org_simulator/rosetta/*.parquet
+experiments/org_simulator/tasks/*.parquet
+experiments/scratchpad_frontier/scratchpad_setup/
+experiments/scratchpad_frontier/scratchpad_setup_phase0/
+experiments/scratchpad_frontier/scratchpad_setup_phase_fix/
+experiments/scratchpad_frontier/scratchpad_smoke/
+experiments/scratchpad_frontier/scratchpad_smoke2/
+experiments/**/openai_*/
+experiments/**/heuristic_*/
+experiments/llm_eval/llm_eval_*.csv
+experiments/llm_eval/llm_eval_*.md
+experiments/**/judged*.csv
+experiments/**/judged*.md
+experiments/**/thread_state_rescue*.csv
+experiments/**/thread_state_rescue*.md
+experiments/**/compare*.csv
+experiments/**/compare*.md
+
+# Local scratch outputs
+scratch/
+
+# Dolt database files (added by bd init)
+.dolt/
+*.db

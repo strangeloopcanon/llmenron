@@ -17,24 +17,24 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser()
     p.add_argument("--out-dir", type=Path, default=Path("results/figures"))
 
-    p.add_argument("--key-results-csv", type=Path, default=Path("results/key_results.csv"))
+    p.add_argument("--key-results-csv", type=Path, default=Path("results/summaries/key_results.csv"))
     p.add_argument(
         "--scratchpad-scenario-dir",
         type=Path,
-        default=Path("results/scratchpad_canonical_pilot/canonical_pilot_50_105"),
+        default=Path("experiments/scratchpad_frontier/scratchpad_canonical_pilot/canonical_pilot_50_105"),
     )
     p.add_argument(
         "--gpt-run-dir",
         type=Path,
         default=Path(
-            "results/scratchpad_canonical_pilot/canonical_pilot_50_105/runs/openai_gpt-5.2_20260210T023527Z"
+            "experiments/scratchpad_frontier/scratchpad_canonical_pilot/canonical_pilot_50_105/runs/openai_gpt-5.2_20260210T023527Z"
         ),
     )
     p.add_argument(
         "--baseline-run-dir",
         type=Path,
         default=Path(
-            "results/scratchpad_canonical_pilot/canonical_pilot_50_105/runs/heuristic_gpt-5.2_20260210T015547Z"
+            "experiments/scratchpad_frontier/scratchpad_canonical_pilot/canonical_pilot_50_105/runs/heuristic_gpt-5.2_20260210T015547Z"
         ),
     )
     p.add_argument("--score-threshold-q", type=float, default=0.75)

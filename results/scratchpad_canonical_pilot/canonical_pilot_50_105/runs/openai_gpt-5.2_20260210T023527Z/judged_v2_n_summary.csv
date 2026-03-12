@@ -1,3 +1,0 @@
-n_threads,episodes,mean_quality,mean_priority_score,mean_reply_score,mean_fact_recall,mean_halluc,p0_sla,p1_sla,info_sufficient_rate,api_error_rate,invalid_rate,judge_input_tokens,judge_output_tokens,quality_ci95_lo,quality_ci95_hi,passes_threshold,passes_quality,passes_p0_sla
-50,1,0.8858333333333333,0.925,0.8861111111111111,0.8888888888888888,0.08333333333333333,1.0,1.0,0.3888888888888889,0.0,0.0,297893,48658,0.8858333333333333,0.8858333333333333,True,True,True
-105,1,0.8744444444444445,0.925,0.9333333333333333,0.7888888888888889,0.06111111111111111,1.0,1.0,0.35555555555555557,0.0,0.0,297957,47607,0.8744444444444445,0.8744444444444445,True,True,True

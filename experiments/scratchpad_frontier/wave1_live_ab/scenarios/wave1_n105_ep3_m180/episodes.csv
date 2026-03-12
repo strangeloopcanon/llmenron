@@ -1,0 +1,4 @@
+episode_id,employee_id,n_threads,messages_in_episode
+ep-00000,emp-003,105,180
+ep-00001,emp-020,105,180
+ep-00002,emp-015,105,180

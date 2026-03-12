@@ -1,0 +1,127 @@
+{
+  "meta": {
+    "created_at_utc": "2026-02-09T04:53:01.068169+00:00",
+    "source": "enron_regime_cards",
+    "schema_version": "1.0",
+    "shock_id": "shock_2002-02-04_r5_to_r6"
+  },
+  "shock": {
+    "break_week": "2002-02-04",
+    "from_regime": 5,
+    "to_regime": 6,
+    "shock_type": "contraction_with_risk_escalation",
+    "strength": {
+      "combined_z": 1.360895355659333,
+      "mean_shift_z": 2.0659322385741405,
+      "cov_shift_z": 0.3033400312871219
+    },
+    "delta": {
+      "arrival_multiplier": 0.090456542641886,
+      "active_thread_multiplier": 0.0915245633061817,
+      "escalation_delta": 0.04594365326109,
+      "specialist_delta": 0.0307210071255112,
+      "approval_delta": -0.0100149037520158,
+      "fanout_delta": -2.2781926007980324,
+      "dependency_density_delta": 0.004752597895492
+    }
+  },
+  "regimes": {
+    "pre": {
+      "regime_id": 5,
+      "start_week": "2001-09-17",
+      "end_week": "2002-01-28",
+      "weeks": 20,
+      "regime_category": "operational_normal",
+      "levels": {
+        "workload": "very_high",
+        "thread_load": "very_high",
+        "coordination": "high",
+        "risk": "medium",
+        "approval_load": "very_high",
+        "handoff": "very_high",
+        "dependency": "very_low"
+      },
+      "simulation_knobs": {
+        "arrival_rate_week": 4108.05,
+        "active_threads_week": 2166.85,
+        "escalation_prob": 0.3354666841053201,
+        "specialist_prob": 0.0745519909581648,
+        "approval_prob": 0.0225337699039652,
+        "fanout_target": 8.162807574111529,
+        "dependency_density": 0.0005646948395127,
+        "dependency_burst_prob": 0.1142588711425887
+      },
+      "top_tasks": [
+        {
+          "task_type": "ongoing_operations_c6",
+          "share": 0.4910789695945945
+        },
+        {
+          "task_type": "quick_resolution_c4",
+          "share": 0.4646853885135135
+        },
+        {
+          "task_type": "ongoing_operations_c1",
+          "share": 0.0201383023648648
+        }
+      ]
+    },
+    "post": {
+      "regime_id": 6,
+      "start_week": "2002-02-04",
+      "end_week": "2002-09-23",
+      "weeks": 25,
+      "regime_category": "operational_normal",
+      "levels": {
+        "workload": "medium",
+        "thread_load": "medium",
+        "coordination": "medium",
+        "risk": "very_high",
+        "approval_load": "medium",
+        "handoff": "medium",
+        "dependency": "low"
+      },
+      "simulation_knobs": {
+        "arrival_rate_week": 371.6,
+        "active_threads_week": 198.32,
+        "escalation_prob": 0.3814103373664102,
+        "specialist_prob": 0.105272998083676,
+        "approval_prob": 0.0125188661519493,
+        "fanout_target": 5.8846149733134965,
+        "dependency_density": 0.0053172927350048,
+        "dependency_burst_prob": 0.0255839822024471
+      },
+      "top_tasks": [
+        {
+          "task_type": "quick_resolution_c4",
+          "share": 0.4864402638651356
+        },
+        {
+          "task_type": "ongoing_operations_c6",
+          "share": 0.4771561202052284
+        },
+        {
+          "task_type": "ongoing_operations_c1",
+          "share": 0.0173466894698265
+        }
+      ]
+    }
+  },
+  "simulator_defaults": {
+    "routing_policy_post": "risk_first_with_specialist_autoroute",
+    "memory_mode_post": "thread_local_scratchpad",
+    "recommended_pre": {
+      "episode_hours": 8,
+      "messages_per_episode": 196,
+      "active_threads_target": 103
+    },
+    "recommended_post": {
+      "episode_hours": 8,
+      "messages_per_episode": 20,
+      "active_threads_target": 9
+    },
+    "episodes_default": 2,
+    "seed_default": 42,
+    "max_total_calls_default": 6000
+  }
+}

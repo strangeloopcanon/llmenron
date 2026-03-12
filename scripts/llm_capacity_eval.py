@@ -116,16 +116,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--p0-sla-threshold", type=float, default=0.90)
     parser.add_argument("--headers-cache", type=Path, default=Path("data/enron_headers_1997_2003.parquet"))
     parser.add_argument("--body-sample-cache", type=Path, default=Path("data/enron_body_sample_20k.parquet"))
-    parser.add_argument("--intent-dist-csv", type=Path, default=Path("results/message_intent_distribution.csv"))
+    parser.add_argument("--intent-dist-csv", type=Path, default=Path("experiments/reference_data/message_intent_distribution.csv"))
     parser.add_argument(
         "--archetype-dist-csv",
         type=Path,
-        default=Path("results/message_body_archetypes_sample.csv"),
+        default=Path("experiments/reference_data/message_body_archetypes_sample.csv"),
         help="Archetype distribution for template pool generation.",
     )
     parser.add_argument("--template-pool-size", type=int, default=20000, help="Number of synthetic messages in template pool.")
     parser.add_argument("--template-topic-group-size", type=int, default=5, help="Messages per synthetic subject group.")
-    parser.add_argument("--output-dir", type=Path, default=Path("results"))
+    parser.add_argument("--output-dir", type=Path, default=Path("experiments/llm_eval"))
     parser.add_argument("--run-tag", default="", help="Optional run tag. If omitted, a timestamped tag is generated.")
     parser.add_argument("--openai-base-url", default=os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"))
     parser.add_argument("--openai-timeout-sec", type=int, default=60)

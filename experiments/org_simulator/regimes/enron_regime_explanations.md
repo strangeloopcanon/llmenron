@@ -1,0 +1,224 @@
+# Enron Regime Explanations
+
+This report is inferred from internal data signatures (volume, coordination, graph proxies, task mix).
+
+## Breakpoint 1: 1997-06-09
+- Inferred shift: **volume surge and coordination expansion**
+- Top feature increases:
+  - `median_thread_duration_h`: +51.6923
+  - `n_events`: +8.9471
+  - `n_targets`: +2.4567
+  - `n_threads_active`: +2.4567
+  - `threads_closed`: +1.6731
+- Top feature decreases:
+  - `mean_fanout`: -0.2308
+  - `cc_rate`: -0.0769
+  - `bcc_rate`: -0.0769
+  - `specialist_consult_rate`: -0.0644
+  - `escalation_rate`: -0.0644
+- Actors gaining share:
+  - `steven.kean@enron.com`: +0.0089
+  - `laurinh@prodigy.net`: -0.0089
+- Subject terms rising in prevalence:
+  - `rick`: +2.944
+  - `joe`: +2.012
+  - `retail`: +2.012
+  - `maureen`: +2.012
+  - `palmer`: +2.012
+  - `lou`: +2.012
+  - `california`: +2.012
+  - `name`: +2.012
+  - `pai`: +2.012
+  - `dan`: +2.012
+- Exemplar complex threads from new regime:
+  - thr_feb5b787618b8273 | task=quick_resolution_c4 | events=12 | participants=1 | escalations=0 | duration_h=1512.0 | subject=Weekly Retail Meeting, EB 27C1
+  - thr_8b68542ca384087d | task=quick_resolution_c4 | events=12 | participants=1 | escalations=0 | duration_h=1344.0 | subject=Department meeting conference call.  800-283-1805, in Rick's name.
+  - thr_ff0f61723b6b2674 | task=quick_resolution_c4 | events=12 | participants=1 | escalations=0 | duration_h=672.0 | subject=Lou Pai's staff meeting, 25C3.
+
+## Breakpoint 2: 1997-10-20
+- Inferred shift: **volume surge and coordination expansion**
+- Top feature increases:
+  - `mean_fanout`: +9.3000
+  - `pair_density_proxy`: +0.4231
+  - `n_actors`: +0.3846
+  - `target_in_centralization`: +0.2931
+  - `message_reply_rate`: +0.2358
+- Top feature decreases:
+  - `median_thread_duration_h`: -71.6731
+  - `n_events`: -9.2548
+  - `n_threads_active`: -1.7644
+  - `n_targets`: -1.6106
+  - `avg_events_per_thread`: -1.1575
+- Actors gaining share:
+  - `mark.taylor@enron.com`: +0.4444
+  - `no.address@enron.com`: +0.0370
+  - `jan_levine@travisintl.com`: +0.0278
+  - `anita.fam@enron.com`: +0.0185
+  - `doug.leach@enron.com`: +0.0185
+- Subject terms rising in prevalence:
+  - `hill`: +3.375
+  - `country`: +3.007
+  - `antonio`: +3.007
+  - `team`: +3.007
+  - `hyatt`: +3.007
+  - `san`: +3.007
+  - `management`: +3.007
+  - `resort`: +3.007
+  - `lng`: +2.756
+  - `indemnification`: +2.756
+- Exemplar complex threads from new regime:
+  - thr_05089a570a78fe13 | task=quick_resolution_c4 | events=6 | participants=3 | escalations=2 | duration_h=257.3 | subject=LNG hedging for China
+  - thr_d6f6d1ba6ca3b545 | task=quick_resolution_c4 | events=4 | participants=1 | escalations=0 | duration_h=1844.9 | subject=Sailing
+  - thr_6795a11d73f47681 | task=ongoing_operations_c0 | events=2 | participants=1 | escalations=2 | duration_h=0.0 | subject=Re: Coral Energy, L.P.
+
+## Breakpoint 3: 1998-11-30
+- Inferred shift: **volume surge and coordination expansion**
+- Top feature increases:
+  - `n_events`: +16.0081
+  - `n_threads_active`: +8.6032
+  - `threads_opened`: +8.1741
+  - `threads_closed`: +8.1215
+  - `n_targets`: +6.1336
+- Top feature decreases:
+  - `median_thread_duration_h`: -12.3269
+  - `mean_fanout`: -5.5228
+  - `avg_events_per_thread`: -0.5926
+  - `mean_participants_per_new_thread`: -0.0425
+  - `cc_rate`: -0.0395
+- Actors gaining share:
+  - `mark.taylor@enron.com`: +0.3737
+  - `markskilling@hotmail.com`: +0.0584
+  - `mark.elliott@enron.com`: +0.0173
+  - `scott.sefton@enron.com`: +0.0087
+  - `christian.yoder@enron.com`: +0.0087
+- Subject terms rising in prevalence:
+  - `newsletter`: +3.179
+  - `investor`: +3.081
+  - `option`: +3.029
+  - `london`: +2.126
+  - `sunday`: +2.126
+  - `memo`: +2.126
+  - `proposed`: +2.126
+  - `exchange`: +2.126
+  - `positions`: +1.983
+  - `transfer`: +1.983
+- Exemplar complex threads from new regime:
+  - thr_1976d02e3ee7f419 | task=approval_governance_c3 | events=12 | participants=2 | escalations=0 | duration_h=3391.4 | subject=Re: Vacation
+  - thr_67f494ef6693e2a8 | task=approval_governance_c3 | events=4 | participants=2 | escalations=4 | duration_h=364.4 | subject=Re: ECT SA Legal Team Meeting
+  - thr_b67f9714514a78d7 | task=approval_governance_c3 | events=6 | participants=1 | escalations=6 | duration_h=241.0 | subject=UK Courts vs. Arbitration for UK Swap Agreements
+
+## Breakpoint 4: 1999-04-12
+- Inferred shift: **volume surge and coordination expansion**
+- Top feature increases:
+  - `n_events`: +2476.5110
+  - `n_threads_active`: +799.8989
+  - `threads_opened`: +705.0373
+  - `threads_closed`: +700.5309
+  - `n_targets`: +615.5847
+- Top feature decreases:
+  - `actor_out_centralization`: -3.3777
+  - `pair_density_proxy`: -0.7615
+  - `target_in_centralization`: -0.3696
+  - `message_reply_rate`: -0.1213
+  - `assignment_rate`: -0.1130
+- Actors gaining share:
+  - `vince.kaminski@enron.com`: +0.0452
+  - `jeff.dasovich@enron.com`: +0.0286
+  - `tana.jones@enron.com`: +0.0255
+  - `sara.shackleton@enron.com`: +0.0251
+  - `chris.germany@enron.com`: +0.0232
+- Subject terms rising in prevalence:
+  - `codesite`: +4.800
+  - `hourahead`: +4.800
+  - `date`: +4.791
+  - `hour`: +4.755
+  - `start`: +4.684
+  - `california`: +4.643
+  - `eol`: +4.601
+  - `com`: +4.452
+  - `list`: +4.299
+  - `ferc`: +4.174
+- Exemplar complex threads from new regime:
+  - thr_f8c2822e37115bc8 | task=specialist_escalation_c7 | events=699 | participants=1 | escalations=699 | duration_h=1515.2 | subject=Schedule Crawler: HourAhead Failure <CODESITE>
+  - thr_5f67afb08497f69e | task=specialist_escalation_c7 | events=507 | participants=99 | escalations=159 | duration_h=20892.8 | subject=Re: FW: (no subject)
+  - thr_a27ff9bc3117fd03 | task=specialist_escalation_c7 | events=758 | participants=17 | escalations=140 | duration_h=11215.7 | subject=Enron Mentions
+
+## Breakpoint 5: 2001-09-17
+- Inferred shift: **volume surge and coordination expansion**
+- Top feature increases:
+  - `n_events`: +1607.2232
+  - `n_threads_active`: +1355.4248
+  - `threads_closed`: +1194.9823
+  - `threads_opened`: +1178.5732
+  - `n_targets`: +943.9547
+- Top feature decreases:
+  - `avg_events_per_thread`: -1.0383
+  - `actor_out_centralization`: -0.7588
+  - `message_reply_rate`: -0.0944
+  - `pair_density_proxy`: -0.0449
+  - `specialist_consult_rate`: -0.0292
+- Actors gaining share:
+  - `no.address@enron.com`: +0.0440
+  - `pete.davis@enron.com`: +0.0265
+  - `louise.kitchen@enron.com`: +0.0140
+  - `d..steffes@enron.com`: +0.0108
+  - `announcements.enron@enron.com`: +0.0087
+- Subject terms rising in prevalence:
+  - `proceeds`: +8.201
+  - `netco`: +7.353
+  - `donate`: +7.102
+  - `supported`: +6.345
+  - `emca`: +6.192
+  - `scs`: +6.058
+  - `rigzone`: +6.058
+  - `resched`: +5.848
+  - `stubs`: +5.739
+  - `excluding`: +5.582
+- Exemplar complex threads from new regime:
+  - thr_6f650049a2d85ab2 | task=specialist_escalation_c7 | events=1124 | participants=1116 | escalations=202 | duration_h=20.3 | subject=Demand Ken Lay Donate Proceeds from Enron Stock Sales
+  - thr_95dccc6e32952f71 | task=specialist_escalation_c7 | events=900 | participants=1 | escalations=900 | duration_h=1376.0 | subject=Schedule Crawler: HourAhead Failure
+  - thr_8e0f6d10fc64ffdf | task=cross_team_program_c2 | events=116 | participants=8 | escalations=0 | duration_h=4008.0 | subject=Synchronization Log:
+
+## Breakpoint 6: 2002-02-04
+- Inferred shift: **centralized approval bottleneck**
+- Top feature increases:
+  - `actor_out_centralization`: +0.9620
+  - `avg_events_per_thread`: +0.1418
+  - `bcc_rate`: +0.1303
+  - `cc_rate`: +0.1303
+  - `pair_density_proxy`: +0.0816
+- Top feature decreases:
+  - `n_events`: -3736.4500
+  - `n_threads_active`: -1968.5300
+  - `threads_opened`: -1730.6800
+  - `threads_closed`: -1728.7700
+  - `n_targets`: -1406.9500
+- Actors gaining share:
+  - `chris.germany@enron.com`: +0.0979
+  - `hollis.kimbrough@enron.com`: +0.0215
+  - `shelley.corman@enron.com`: +0.0170
+  - `kevin.hyatt@enron.com`: +0.0165
+  - `jeff.duff@enron.com`: +0.0165
+- Subject terms rising in prevalence:
+  - `trent`: +6.253
+  - `visupro`: +6.078
+  - `sky`: +5.893
+  - `ubswe`: +5.442
+  - `atp`: +5.385
+  - `spc`: +5.260
+  - `antwort`: +5.226
+  - `clear`: +4.903
+  - `mcv`: +4.855
+  - `clipper`: +4.803
+- Exemplar complex threads from new regime:
+  - thr_b19fe5c8c5e55025 | task=ongoing_operations_c0 | events=29 | participants=2 | escalations=28 | duration_h=4.0 | subject=Online Trading Simulation
+  - thr_eb29093937feb113 | task=ongoing_operations_c0 | events=1 | participants=1 | escalations=0 | duration_h=0.0 | subject=Subscriber Voicemail Migration
+  - thr_0f33d90e0916d820 | task=ongoing_operations_c0 | events=25 | participants=2 | escalations=25 | duration_h=4.0 | subject=Trader Presentations - 2/7 @ 2:30 p.m. (CST) in Conf RM 06980
+
+## External-Date Sanity Check (Post Hoc)
+- `western_crisis_period_start_proxy` (2000-06-01): nearest breakpoint `1999-04-12` (416 days away)
+- `skilling_resignation` (2001-08-14): nearest breakpoint `2001-09-17` (34 days away)
+- `oct_2001_disclosure_shock` (2001-10-16): nearest breakpoint `2001-09-17` (29 days away)
+- `bankruptcy_filing` (2001-12-02): nearest breakpoint `2002-02-04` (64 days away)
+- `ferc_investigation_start` (2002-02-13): nearest breakpoint `2002-02-04` (9 days away)
+

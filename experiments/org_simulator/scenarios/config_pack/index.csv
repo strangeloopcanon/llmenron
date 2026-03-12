@@ -1,0 +1,7 @@
+shock_id,file,break_week,from_regime,to_regime,shock_type,arrival_multiplier,thread_multiplier,recommended_post_messages,recommended_post_threads
+shock_1997-06-09_r0_to_r1,experiments/org_simulator/scenarios/config_pack/shock_1997-06-09_r0_to_r1.json,1997-06-09,0,1,volume_surge,2.0385044642857144,2.101293103448276,20,6
+shock_1997-10-20_r1_to_r2,experiments/org_simulator/scenarios/config_pack/shock_1997-10-20_r1_to_r2.json,1997-10-20,1,2,contraction_with_risk_escalation,0.4730358609362168,0.6235897435897435,20,6
+shock_1998-11-30_r2_to_r3,experiments/org_simulator/scenarios/config_pack/shock_1998-11-30_r2_to_r3.json,1998-11-30,2,3,volume_surge,2.9269005847953213,3.9432132963988926,20,6
+shock_1999-04-12_r3_to_r4,experiments/org_simulator/scenarios/config_pack/shock_1999-04-12_r3_to_r4.json,1999-04-12,3,4,surge_plus_risk,102.84785424549204,70.39761981807068,119,39
+shock_2001-09-17_r4_to_r5,experiments/org_simulator/scenarios/config_pack/shock_2001-09-17_r4_to_r5.json,2001-09-17,4,5,volume_surge,1.6426767525700163,2.670424838186917,196,103
+shock_2002-02-04_r5_to_r6,experiments/org_simulator/scenarios/config_pack/shock_2002-02-04_r5_to_r6.json,2002-02-04,5,6,contraction_with_risk_escalation,0.090456542641886,0.0915245633061817,20,9

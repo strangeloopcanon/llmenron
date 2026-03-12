@@ -1,0 +1,304 @@
+meta:
+  created_at_utc: "2026-02-09T04:39:49.117069+00:00"
+  source: "enron_rosetta"
+  coverage_note: "Calibrate and replay with the same task/dependency/shock structure; vary only coordination technology."
+inputs:
+  events_rows: 410019
+  threads_rows: 133218
+  weekly_points: 233
+  coverage_threshold: 0.6
+breakpoints:
+  - "1997-06-09"
+  - "1997-10-20"
+  - "1998-11-30"
+  - "1999-04-12"
+  - "2001-09-17"
+  - "2002-02-04"
+shock_schedule:
+  -
+    break_week: "1997-06-09"
+    from_regime: 0
+    to_regime: 1
+    label: "volume surge and coordination expansion"
+    top_feature_up:
+      - "median_thread_duration_h"
+      - "n_events"
+      - "n_targets"
+    top_feature_down:
+      - "mean_fanout"
+      - "cc_rate"
+      - "bcc_rate"
+  -
+    break_week: "1997-10-20"
+    from_regime: 1
+    to_regime: 2
+    label: "volume surge and coordination expansion"
+    top_feature_up:
+      - "mean_fanout"
+      - "pair_density_proxy"
+      - "n_actors"
+    top_feature_down:
+      - "median_thread_duration_h"
+      - "n_events"
+      - "n_threads_active"
+  -
+    break_week: "1998-11-30"
+    from_regime: 2
+    to_regime: 3
+    label: "volume surge and coordination expansion"
+    top_feature_up:
+      - "n_events"
+      - "n_threads_active"
+      - "threads_opened"
+    top_feature_down:
+      - "median_thread_duration_h"
+      - "mean_fanout"
+      - "avg_events_per_thread"
+  -
+    break_week: "1999-04-12"
+    from_regime: 3
+    to_regime: 4
+    label: "volume surge and coordination expansion"
+    top_feature_up:
+      - "n_events"
+      - "n_threads_active"
+      - "threads_opened"
+    top_feature_down:
+      - "actor_out_centralization"
+      - "pair_density_proxy"
+      - "target_in_centralization"
+  -
+    break_week: "2001-09-17"
+    from_regime: 4
+    to_regime: 5
+    label: "volume surge and coordination expansion"
+    top_feature_up:
+      - "n_events"
+      - "n_threads_active"
+      - "threads_closed"
+    top_feature_down:
+      - "avg_events_per_thread"
+      - "actor_out_centralization"
+      - "message_reply_rate"
+  -
+    break_week: "2002-02-04"
+    from_regime: 5
+    to_regime: 6
+    label: "centralized approval bottleneck"
+    top_feature_up:
+      - "actor_out_centralization"
+      - "avg_events_per_thread"
+      - "bcc_rate"
+    top_feature_down:
+      - "n_events"
+      - "n_threads_active"
+      - "threads_opened"
+regimes:
+  -
+    regime_id: 0
+    start_week: "1996-12-30"
+    end_week: "1997-06-02"
+    weeks: 13
+    avg_events_per_week: 8.61538
+    avg_threads_active_per_week: 2.23077
+    avg_actors_per_week: 1
+    escalation_rate: 0.0769231
+    specialist_consult_rate: 0.0769231
+    mean_fanout: 0.230769
+    approval_rate: 0
+    task_type_distribution:
+      quick_resolution_c4: 0.785714
+      ongoing_operations_c6: 0.142857
+      cross_team_program_c2: 0.0357143
+      ongoing_operations_c1: 0.0357143
+    dependency_stats:
+      dependency_edges: 22
+      dependency_nodes: 20
+      dependency_density: 0.115789
+      mean_temporal_coupling: 4
+      p90_temporal_coupling: 4
+      mean_shared_actor_count: 1
+  -
+    regime_id: 1
+    start_week: "1997-06-09"
+    end_week: "1997-10-13"
+    weeks: 16
+    avg_events_per_week: 17.5625
+    avg_threads_active_per_week: 4.6875
+    avg_actors_per_week: 1
+    escalation_rate: 0.0125
+    specialist_consult_rate: 0.0125
+    mean_fanout: 0
+    approval_rate: 0
+    task_type_distribution:
+      quick_resolution_c4: 0.816667
+      ongoing_operations_c6: 0.133333
+      ongoing_operations_c1: 0.0333333
+      approval_governance_c3: 0.0166667
+    dependency_stats:
+      dependency_edges: 97
+      dependency_nodes: 53
+      dependency_density: 0.0703919
+      mean_temporal_coupling: 4
+      p90_temporal_coupling: 4
+      mean_shared_actor_count: 1
+  -
+    regime_id: 2
+    start_week: "1997-10-20"
+    end_week: "1998-11-23"
+    weeks: 13
+    avg_events_per_week: 8.30769
+    avg_threads_active_per_week: 2.92308
+    avg_actors_per_week: 1.38462
+    escalation_rate: 0.228272
+    specialist_consult_rate: 0.134615
+    mean_fanout: 9.30003
+    approval_rate: 0
+    task_type_distribution:
+      quick_resolution_c4: 0.882353
+      ongoing_operations_c0: 0.0588235
+      ongoing_operations_c6: 0.0588235
+    dependency_stats:
+      dependency_edges: 8
+      dependency_nodes: 12
+      dependency_density: 0.121212
+      mean_temporal_coupling: 5.25
+      p90_temporal_coupling: 6.6
+      mean_shared_actor_count: 1
+  -
+    regime_id: 3
+    start_week: "1998-11-30"
+    end_week: "1999-04-05"
+    weeks: 19
+    avg_events_per_week: 24.3158
+    avg_threads_active_per_week: 11.5263
+    avg_actors_per_week: 2.42105
+    escalation_rate: 0.223195
+    specialist_consult_rate: 0.13131
+    mean_fanout: 3.77726
+    approval_rate: 0.0197305
+    task_type_distribution:
+      quick_resolution_c4: 0.804878
+      ongoing_operations_c6: 0.121951
+      ongoing_operations_c1: 0.0439024
+      approval_governance_c3: 0.0243902
+      ongoing_operations_c0: 0.00487805
+    dependency_stats:
+      dependency_edges: 9
+      dependency_nodes: 11
+      dependency_density: 0.163636
+      mean_temporal_coupling: 6.77778
+      p90_temporal_coupling: 12
+      mean_shared_actor_count: 1
+  -
+    regime_id: 4
+    start_week: "1999-04-12"
+    end_week: "2001-09-10"
+    weeks: 127
+    avg_events_per_week: 2500.83
+    avg_threads_active_per_week: 811.425
+    avg_actors_per_week: 307.37
+    escalation_rate: 0.341078
+    specialist_consult_rate: 0.103782
+    mean_fanout: 7.03555
+    approval_rate: 0.0219028
+    task_type_distribution:
+      quick_resolution_c4: 0.691937
+      ongoing_operations_c6: 0.194159
+      ongoing_operations_c1: 0.0582334
+      approval_governance_c3: 0.0299307
+      ongoing_operations_c0: 0.0211418
+      cross_team_program_c2: 0.00430096
+      specialist_escalation_c7: 0.000164998
+      approval_governance_c5: 0.000131999
+    dependency_stats:
+      dependency_edges: 233741
+      dependency_nodes: 39819
+      dependency_density: 0.000294846
+      mean_temporal_coupling: 7.09559
+      p90_temporal_coupling: 10
+      mean_shared_actor_count: 1.03245
+  -
+    regime_id: 5
+    start_week: "2001-09-17"
+    end_week: "2002-01-28"
+    weeks: 20
+    avg_events_per_week: 4108.05
+    avg_threads_active_per_week: 2166.85
+    avg_actors_per_week: 1088.35
+    escalation_rate: 0.335467
+    specialist_consult_rate: 0.074552
+    mean_fanout: 8.16281
+    approval_rate: 0.0225338
+    task_type_distribution:
+      ongoing_operations_c6: 0.491079
+      quick_resolution_c4: 0.464685
+      ongoing_operations_c1: 0.0201383
+      ongoing_operations_c0: 0.0137774
+      approval_governance_c3: 0.00892103
+      cross_team_program_c2: 0.00116132
+      approval_governance_c5: 0.000184755
+      specialist_escalation_c7: 5.27872e-05
+    dependency_stats:
+      dependency_edges: 13837
+      dependency_nodes: 7001
+      dependency_density: 0.000564695
+      mean_temporal_coupling: 10.3348
+      p90_temporal_coupling: 17
+      mean_shared_actor_count: 1.0727
+  -
+    regime_id: 6
+    start_week: "2002-02-04"
+    end_week: "2002-09-23"
+    weeks: 25
+    avg_events_per_week: 371.6
+    avg_threads_active_per_week: 198.32
+    avg_actors_per_week: 103.24
+    escalation_rate: 0.38141
+    specialist_consult_rate: 0.105273
+    mean_fanout: 5.88461
+    approval_rate: 0.0125189
+    task_type_distribution:
+      quick_resolution_c4: 0.48644
+      ongoing_operations_c6: 0.477156
+      ongoing_operations_c1: 0.0173467
+      approval_governance_c3: 0.0102614
+      ongoing_operations_c0: 0.0087955
+    dependency_stats:
+      dependency_edges: 899
+      dependency_nodes: 582
+      dependency_density: 0.00531729
+      mean_temporal_coupling: 5.75528
+      p90_temporal_coupling: 7
+      mean_shared_actor_count: 1.07119
+task_types_global:
+  quick_resolution_c4: 0.62129
+  ongoing_operations_c6: 0.287116
+  ongoing_operations_c1: 0.04609
+  approval_governance_c3: 0.023323
+  ongoing_operations_c0: 0.018639
+  cross_team_program_c2: 0.003273
+  approval_governance_c5: 0.000143
+  specialist_escalation_c7: 0.000128
+dependency_graph_global:
+  edges: 250000
+  nodes: 47905
+  density: 0.00021788
+  mean_temporal_coupling: 7.28269
+  p90_temporal_coupling: 11
+  dependency_type_mix:
+    weak_coupling: 0.918876
+    burst_coupling: 0.046644
+    shared_staff_dependency: 0.028932
+    cross_regime_carryover: 0.005548
+replay_constraints:
+  freeze_exogenous:
+    - "task_arrivals_by_regime"
+    - "task_type_distribution_by_regime"
+    - "dependency_graph_statistics"
+    - "shock_schedule"
+  vary_only:
+    - "routing_policy"
+    - "memory_policy"
+    - "delegation_policy"
+    - "response_latency_model"
