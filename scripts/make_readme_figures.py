@@ -37,6 +37,37 @@ def parse_args() -> argparse.Namespace:
             "experiments/scratchpad_frontier/scratchpad_canonical_pilot/canonical_pilot_50_105/runs/heuristic_gpt-5.2_20260210T015547Z"
         ),
     )
+    p.add_argument(
+        "--wave1-scratchpad-dir",
+        type=Path,
+        default=Path(
+            "experiments/scratchpad_frontier/wave1_live_ab/scenarios/wave1_n105_ep3_m180/runs/openai_scratchpad_only_gpt-5.2_wave1_gpt52_scratchpad"
+        ),
+    )
+    p.add_argument(
+        "--wave1-thread-state-dir",
+        type=Path,
+        default=Path(
+            "experiments/scratchpad_frontier/wave1_live_ab/scenarios/wave1_n105_ep3_m180/runs/openai_thread_state_gpt-5.2_wave1_gpt52_thread_state"
+        ),
+    )
+    p.add_argument(
+        "--wave2-mini-dir",
+        type=Path,
+        default=Path(
+            "experiments/scratchpad_frontier/wave1_live_ab/scenarios/wave1_n105_ep3_m180/runs/openai_thread_state_gpt-5-mini_wave2_gpt5mini_thread_state"
+        ),
+    )
+    p.add_argument(
+        "--wave3-dir",
+        type=Path,
+        default=Path("experiments/org_simulator/wave3_shared_board_live_v2"),
+    )
+    p.add_argument(
+        "--wave4-dir",
+        type=Path,
+        default=Path("experiments/org_simulator/wave4_actor_identity_live"),
+    )
     p.add_argument("--score-threshold-q", type=float, default=0.75)
     return p.parse_args()
 
@@ -236,6 +267,155 @@ def plot_synthetic_memory_recall(*, key_results_csv: Path, gpt_run_dir: Path, ba
     save_fig(out_path)
 
 
+def plot_wave1_thread_state_ab(*, scratchpad_dir: Path, thread_state_dir: Path, out_path: Path) -> None:
+    scratch = pd.read_csv(scratchpad_dir / "judged_wave1_n_summary.csv").iloc[0]
+    state = pd.read_csv(thread_state_dir / "judged_wave1_n_summary.csv").iloc[0]
+
+    metrics = [
+        ("Memory target match", "memory_probe_target_match"),
+        ("Overall target match", "target_match"),
+        ("Judged quality", "mean_quality"),
+    ]
+    x = list(range(len(metrics)))
+    w = 0.34
+
+    plt.figure(figsize=(8.8, 4.6))
+    plt.bar(
+        [i - w / 2 for i in x],
+        [float(scratch[key]) for _, key in metrics],
+        width=w,
+        color="#8AA3C7",
+        label="Scratchpad only",
+    )
+    plt.bar(
+        [i + w / 2 for i in x],
+        [float(state[key]) for _, key in metrics],
+        width=w,
+        color="#2A5CAA",
+        label="Thread state",
+    )
+    for idx, (_, key) in enumerate(metrics):
+        plt.text(idx - w / 2, float(scratch[key]) + 0.02, f"{float(scratch[key]):.2f}", ha="center", va="bottom", fontsize=9)
+        plt.text(idx + w / 2, float(state[key]) + 0.02, f"{float(state[key]):.2f}", ha="center", va="bottom", fontsize=9)
+
+    plt.ylim(0.0, 1.08)
+    plt.xticks(x, [label for label, _ in metrics])
+    plt.ylabel("Score (higher is better)")
+    plt.title("Experiment 1: Explicit Thread State Beats A Giant Scratchpad")
+    plt.grid(axis="y", alpha=0.25)
+    plt.legend(frameon=False, loc="upper left")
+
+    save_fig(out_path)
+
+
+def plot_wave2_structure_vs_scale(
+    *,
+    wave1_scratchpad_dir: Path,
+    wave1_thread_state_dir: Path,
+    wave2_mini_dir: Path,
+    out_path: Path,
+) -> None:
+    strong_scratch = pd.read_csv(wave1_scratchpad_dir / "n_summary.csv").iloc[0]
+    strong_state = pd.read_csv(wave1_thread_state_dir / "n_summary.csv").iloc[0]
+    mini_state = pd.read_csv(wave2_mini_dir / "episode_summary.csv").iloc[0]
+
+    configs = [
+        ("5.2 scratch", strong_scratch),
+        ("5.2 state", strong_state),
+        ("5-mini state", mini_state),
+    ]
+    metrics = [
+        ("Valid output rate", lambda row: 1.0 - float(row["invalid_rate"])),
+        ("Target match", lambda row: float(row["target_match"])),
+        ("Memory target match", lambda row: float(row["memory_target_match"])),
+    ]
+    x = list(range(len(metrics)))
+    w = 0.22
+    colors = ["#8AA3C7", "#2A5CAA", "#D98324"]
+
+    plt.figure(figsize=(9.2, 4.8))
+    for idx, (label, row) in enumerate(configs):
+        vals = [fn(row) for _, fn in metrics]
+        positions = [i + (idx - 1) * w for i in x]
+        plt.bar(positions, vals, width=w, label=label, color=colors[idx])
+        for px, val in zip(positions, vals):
+            plt.text(px, val + 0.02, f"{val:.2f}", ha="center", va="bottom", fontsize=8.5)
+
+    plt.ylim(0.0, 1.08)
+    plt.xticks(x, [label for label, _ in metrics])
+    plt.ylabel("Score (higher is better)")
+    plt.title("Experiment 2: Better State Helps, But It Does Not Rescue A Weak Control Model")
+    plt.grid(axis="y", alpha=0.25)
+    plt.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.10), ncol=3)
+
+    save_fig(out_path)
+
+
+def plot_wave3_shared_board(*, wave3_dir: Path, out_path: Path) -> None:
+    conditions = [
+        ("Single\nno board", wave3_dir / "single_no_board" / "openai_gpt-5.2_20260311T224031Z" / "transition_summary.csv"),
+        ("Single\nshared board", wave3_dir / "single_shared_board" / "openai_gpt-5.2_20260311T224031Z" / "transition_summary.csv"),
+        ("Multi\nno board", wave3_dir / "multi_no_board" / "openai_gpt-5.2_20260311T224031Z" / "transition_summary.csv"),
+        ("Multi\nshared board", wave3_dir / "multi_shared_board" / "openai_gpt-5.2_20260311T224031Z" / "transition_summary.csv"),
+    ]
+    labels = []
+    vals = []
+    colors = []
+    for label, path in conditions:
+        row = pd.read_csv(path).iloc[0]
+        labels.append(label)
+        vals.append(float(row["mean_quality_post"]))
+        colors.append("#2A5CAA" if "shared" in label.lower() else "#8AA3C7")
+
+    x = list(range(len(labels)))
+    plt.figure(figsize=(8.6, 4.8))
+    plt.bar(x, vals, color=colors, width=0.62)
+    for xi, val in zip(x, vals):
+        plt.text(xi, val + 0.02, f"{val:.2f}", ha="center", va="bottom", fontsize=9)
+
+    plt.ylim(0.0, 0.78)
+    plt.xticks(x, labels)
+    plt.ylabel("Post-shock quality")
+    plt.title("Experiment 3: Shared Board Matters More Than More Agents")
+    plt.grid(axis="y", alpha=0.25)
+
+    save_fig(out_path)
+
+
+def plot_wave4_actor_identity(*, wave4_dir: Path, out_path: Path) -> None:
+    conditions = [
+        ("No board", wave4_dir / "single_no_board" / "openai_gpt-5.2_20260311T225137Z" / "transition_summary.csv"),
+        ("Shared board", wave4_dir / "single_shared_board" / "openai_gpt-5.2_20260311T225137Z" / "transition_summary.csv"),
+        ("Oracle board", wave4_dir / "single_oracle_board" / "openai_gpt-5.2_20260311T225137Z" / "transition_summary.csv"),
+    ]
+    metrics = [
+        ("Owner match", lambda row: float(row["owner_match_post"])),
+        ("Reply identity match", lambda row: float(row["reply_identity_match_post"])),
+        ("Authorized response rate", lambda row: 1.0 - float(row["unauthorized_response_rate_post"])),
+    ]
+    x = list(range(len(metrics)))
+    w = 0.22
+    colors = ["#8AA3C7", "#2A5CAA", "#D98324"]
+
+    plt.figure(figsize=(9.2, 4.8))
+    for idx, (label, path) in enumerate(conditions):
+        row = pd.read_csv(path).iloc[0]
+        vals = [fn(row) for _, fn in metrics]
+        positions = [i + (idx - 1) * w for i in x]
+        plt.bar(positions, vals, width=w, label=label, color=colors[idx])
+        for px, val in zip(positions, vals):
+            plt.text(px, val + 0.02, f"{val:.2f}", ha="center", va="bottom", fontsize=8.5)
+
+    plt.ylim(0.0, 1.08)
+    plt.xticks(x, [label for label, _ in metrics])
+    plt.ylabel("Score (higher is better)")
+    plt.title("Experiment 4: The Board Needs Actor Identity, Not Just Task Identity")
+    plt.grid(axis="y", alpha=0.25)
+    plt.legend(frameon=False, loc="upper left")
+
+    save_fig(out_path)
+
+
 def main() -> None:
     args = parse_args()
     ensure_out_dir(args.out_dir)
@@ -256,6 +436,25 @@ def main() -> None:
         gpt_run_dir=args.gpt_run_dir,
         baseline_run_dir=args.baseline_run_dir,
         out_path=args.out_dir / "synthetic_pilot_memory_recall.png",
+    )
+    plot_wave1_thread_state_ab(
+        scratchpad_dir=args.wave1_scratchpad_dir,
+        thread_state_dir=args.wave1_thread_state_dir,
+        out_path=args.out_dir / "experiment1_thread_state_vs_scratchpad.png",
+    )
+    plot_wave2_structure_vs_scale(
+        wave1_scratchpad_dir=args.wave1_scratchpad_dir,
+        wave1_thread_state_dir=args.wave1_thread_state_dir,
+        wave2_mini_dir=args.wave2_mini_dir,
+        out_path=args.out_dir / "experiment2_structure_vs_scale.png",
+    )
+    plot_wave3_shared_board(
+        wave3_dir=args.wave3_dir,
+        out_path=args.out_dir / "experiment3_shared_board.png",
+    )
+    plot_wave4_actor_identity(
+        wave4_dir=args.wave4_dir,
+        out_path=args.out_dir / "experiment4_actor_identity.png",
     )
     print(f"Wrote figures to: {args.out_dir.resolve()}")
 
