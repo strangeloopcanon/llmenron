@@ -1,6 +1,6 @@
 # Wave 3 Shared-Board Summary
 
-This was the coordination test. “More agents” here means multiple worker instances of the same model processing the same org simulation in parallel. The question was whether extra agents help on their own, or whether shared state matters more.
+This was the coordination test. “More agents” here means multiple worker instances of the same model processing the same org simulation in parallel. The question was whether extra agents help on their own, or whether shared state matters more. This pilot was about coordination quality, not hidden project-code recovery.
 
 Post-shock quality:
 

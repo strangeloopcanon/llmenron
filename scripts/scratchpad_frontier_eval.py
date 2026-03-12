@@ -253,6 +253,25 @@ def normalize_project_code(value: Any) -> str:
     return match.group(1) if match else ""
 
 
+def resolve_gold_project_code(
+    *,
+    explicit_value: Any,
+    gold_required_key: Any,
+    gold_required_value: Any,
+    subject: str,
+    body: str,
+) -> str:
+    explicit = normalize_project_code(explicit_value)
+    if explicit:
+        return explicit
+    if str(gold_required_key or "").strip() == "project_code":
+        from_probe = normalize_project_code(gold_required_value)
+        if from_probe:
+            return from_probe
+    extracted = extract_explicit_thread_facts(subject=subject, body=body).get("project_code", "")
+    return normalize_project_code(extracted)
+
+
 def find_project_code(text: str) -> str:
     if not isinstance(text, str):
         return ""
@@ -1946,7 +1965,13 @@ def run_mode(args: argparse.Namespace) -> None:
                     body=str(row["body"]),
                     gold_priority=str(row["gold_priority"]),
                     gold_reply_type=str(row["gold_reply_type"]),
-                    gold_project_code=str(row.get("gold_project_code", "")),
+                    gold_project_code=resolve_gold_project_code(
+                        explicit_value=row.get("gold_project_code", ""),
+                        gold_required_key=row.get("gold_required_key", ""),
+                        gold_required_value=row.get("gold_required_value", ""),
+                        subject=str(row["subject"]),
+                        body=str(row["body"]),
+                    ),
                     gold_required_key=str(row["gold_required_key"]),
                     gold_required_value=str(row["gold_required_value"]),
                     needs_memory=int(row["needs_memory"]),

@@ -214,35 +214,36 @@ def build_message_text(
     fanout_hint: int,
     anchor: bool,
 ) -> tuple[str, str, str, str, str]:
+    include_project_code = anchor or (not needs_memory)
     if task_kind == "approval":
-        subject = f"Approval needed for {project_code}"
+        subject = f"Approval needed for {project_code}" if include_project_code else "Approval needed"
         reply_type = "ANSWER"
         priority = "P1" if not escalation_flag else "P0"
     elif task_kind == "specialist":
-        subject = f"Specialist consult on {project_code}"
+        subject = f"Specialist consult on {project_code}" if include_project_code else "Specialist consult"
         reply_type = "REQUEST_INFO"
         priority = "P1" if not escalation_flag else "P0"
     elif task_kind == "program":
-        subject = f"Cross-team update {project_code}"
+        subject = f"Cross-team update {project_code}" if include_project_code else "Cross-team update"
         reply_type = "ACK"
         priority = "P1"
     elif task_kind == "quick":
-        subject = f"Quick action {project_code}"
+        subject = f"Quick action {project_code}" if include_project_code else "Quick action"
         reply_type = "ANSWER"
         priority = "P2"
     else:
-        subject = f"Operations follow-up {project_code}"
+        subject = f"Operations follow-up {project_code}" if include_project_code else "Operations follow-up"
         reply_type = "ANSWER"
         priority = "P1"
 
     if escalation_flag and priority != "P0":
         priority = "P0"
     if approval_flag and task_kind != "approval":
-        subject = f"Re: Approval check {project_code}"
+        subject = f"Re: Approval check {project_code}" if include_project_code else "Re: Approval check"
         reply_type = "ANSWER"
         priority = "P1" if priority != "P0" else "P0"
     if specialist_flag and task_kind not in {"specialist", "approval"}:
-        subject = f"Re: Specialist input needed {project_code}"
+        subject = f"Re: Specialist input needed {project_code}" if include_project_code else "Re: Specialist input needed"
         reply_type = "REQUEST_INFO"
 
     if anchor:

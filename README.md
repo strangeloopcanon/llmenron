@@ -177,9 +177,11 @@ python scripts/scratchpad_frontier_eval.py \
   --scenario-dir experiments/scratchpad_frontier/scratchpad_canonical_pilot/canonical_pilot_50_105 \
   --agent openai \
   --model gpt-5.2 \
+  --memory-policy scratchpad_only \
   --openai-reasoning-mode auto \
   --prompt-profile meaning \
-  --temperature 0
+  --temperature 0 \
+  --run-tag example
 ```
 
 Judge the run (batching reduces call count):
@@ -187,7 +189,7 @@ Judge the run (batching reduces call count):
 ```bash
 python scripts/judge_scratchpad_frontier_run.py \
   --scenario-dir experiments/scratchpad_frontier/scratchpad_canonical_pilot/canonical_pilot_50_105 \
-  --run-dir experiments/scratchpad_frontier/scratchpad_canonical_pilot/canonical_pilot_50_105/runs/openai_gpt-5.2_20260210T023527Z \
+  --run-dir experiments/scratchpad_frontier/scratchpad_canonical_pilot/canonical_pilot_50_105/runs/openai_scratchpad_only_gpt-5.2_example \
   --output-name judged_v2 \
   --judge-model gpt-5.2 \
   --judge-reasoning-mode auto \

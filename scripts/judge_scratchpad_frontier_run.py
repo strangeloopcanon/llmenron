@@ -23,6 +23,10 @@ import requests
 
 PRIORITY_SLA_MIN = {"P0": 5.0, "P1": 20.0, "P2": 120.0}
 RE_PROJECT_CODE = re.compile(r"\b([A-Z][0-9]{3})\b")
+RE_CLARIFY_HINT = re.compile(
+    r"(project code|thread reference|thread id|which project|what project|which thread|before i can safely act|before i can act)",
+    re.IGNORECASE,
+)
 
 RUBRIC_MEANING = (
     "Priority meanings: "
@@ -379,6 +383,21 @@ def extract_project_code(*values: Any) -> str:
     return ""
 
 
+def infer_binding_decision(row: pd.Series) -> str:
+    pred_target = extract_project_code(row.get("pred_target_project_code", ""))
+    if pred_target:
+        return "bound"
+    text = " ".join(
+        [
+            str(row.get("pred_action_summary", "")),
+            str(row.get("pred_draft_reply", "")),
+        ]
+    )
+    if RE_CLARIFY_HINT.search(text):
+        return "clarify"
+    return ""
+
+
 def ensure_binding_columns(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
 
@@ -394,12 +413,11 @@ def ensure_binding_columns(df: pd.DataFrame) -> pd.DataFrame:
     out["pred_target_project_code"] = out["pred_target_project_code"].fillna("").astype(str).str.strip()
 
     if "pred_binding_decision" not in out.columns:
-        out["pred_binding_decision"] = np.where(
-            out["pred_target_project_code"] != "",
-            "bound",
-            "",
-        )
+        out["pred_binding_decision"] = out.apply(infer_binding_decision, axis=1)
     out["pred_binding_decision"] = out["pred_binding_decision"].fillna("").astype(str).str.strip().str.lower()
+    missing_binding = out["pred_binding_decision"] == ""
+    if missing_binding.any():
+        out.loc[missing_binding, "pred_binding_decision"] = out.loc[missing_binding].apply(infer_binding_decision, axis=1)
 
     if "pred_binding_source" not in out.columns:
         out["pred_binding_source"] = ""

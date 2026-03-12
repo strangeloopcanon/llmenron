@@ -1,0 +1,7 @@
+archetype,sample_messages,share,median_body_chars,question_rate,action_language_rate,time_reference_rate
+informational_update,5906,0.2953,319,0.0,0.0,0.25601083643752115
+deadline_request,5065,0.25325,1713,0.4807502467917078,1.0,1.0
+direct_request,3565,0.17825,695,0.0,1.0,0.0
+information_request,2840,0.142,702,1.0,0.0,0.43309859154929575
+request_with_question,1733,0.08665,1244,1.0,1.0,0.0
+document_delivery,891,0.04455,423,0.0,0.0,0.29741863075196406

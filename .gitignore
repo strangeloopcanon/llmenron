@@ -41,7 +41,12 @@ results/*
 experiments/**/runs/
 experiments/**/llm_eval_runs/
 experiments/org_simulator/simulator_runs/
-experiments/reference_data/
+experiments/reference_data/*
+!experiments/reference_data/context_spotcheck_examples.csv
+!experiments/reference_data/context_spotcheck_summary.md
+!experiments/reference_data/message_body_archetypes_sample.csv
+!experiments/reference_data/message_intent_distribution.csv
+!experiments/reference_data/message_intent_summary.md
 experiments/org_simulator/rosetta/*.parquet
 experiments/org_simulator/tasks/*.parquet
 experiments/scratchpad_frontier/scratchpad_setup/

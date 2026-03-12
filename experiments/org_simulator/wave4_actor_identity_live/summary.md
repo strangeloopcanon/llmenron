@@ -1,6 +1,6 @@
 # Wave 4 Actor-Identity Summary
 
-This was a follow-up to the shared-board result. Once shared state looked important, the next question was what that state should contain. This pilot focused on actor identity: who should own the task internally, and who should respond externally.
+This was a follow-up to the shared-board result. Once shared state looked important, the next question was what that state should contain. This pilot focused on actor identity: who should own the task internally, and who should respond externally. It was not meant to be a hidden-memory probe.
 
 Post-shock actor-identity metrics:
 
